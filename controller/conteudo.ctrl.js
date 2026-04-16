@@ -1,58 +1,71 @@
+// ============================================================
+// controller/conteudo.ctrl.js
+// ============================================================
+
+import { auth } from "/firebase/firebase-config.js";
+import { onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// Substitui o onAuthStateChanged atual por este:
+let verificado = false;
+
+onAuthStateChanged(auth, (usuario) => {
+    if (verificado) return; // ignora disparos duplicados
+    verificado = true;
+
+    if (!usuario) {
+       window.location.replace("/view/login.html");
+    } else {
+    carregarTela('dashboard'); // ← usa isso
+}
+});
+document.getElementById('btn-sair')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    signOut(auth).then(() => {
+        window.location.replace('/view/login.html');
+    });
+});
+
 const conteudo = document.getElementById('conteudo-principal');
 
-// Mapa de telas: chave = data-tela, valor = caminho do arquivo HTML
 const telas = {
-    dashboard:          '/view/dashboard.html',
-    profissionais:      '/view/profissionais.html',
-    documentos:         '/view/documentos.html',
-    alertas:            '/view/alertas.html',
-    importar_exportar:  '/view/dados.html',
-    config:             '/view/config.html',  
+    dashboard:         '/view/dashboard.html',
+    profissionais:     '/view/profissionais.html',
+    documentos:        '/view/documentos.html',
+    alertas:           '/view/alertas.html',
+    importar_exportar: '/view/dados.html',
+    config:            '/view/config.html',
 };
 
-// CSS específico de cada tela (carregados dinamicamente)
 const cssTelas = {
-    dashboard:          '/view/css/dashboard.css',
-    profissionais:      '/view/css/profissionais.css',
-    documentos:         '/view/css/documentos.css',
-    alertas:            '/view/css/alertas.css',
-    importar_exportar:  '/view/css/dados.css',
-    config:             '/view/css/config.css',
+    dashboard:         '/view/css/dashboard.css',
+    profissionais:     '/view/css/profissionais.css',
+    documentos:        '/view/css/documentos.css',
+    alertas:           '/view/css/alertas.css',
+    importar_exportar: '/view/css/dados.css',
+    config:            '/view/css/config.css',
 };
 
-// CSS já carregados (evita duplicatas)
-const cssCarregados = new Set();
-
-// Tela atualmente ativa
+let cssAtivo  = null;
 let telaAtiva = null;
-
-// -----------------------------------------------
-//  Carrega o CSS de uma tela dinamicamente
-// -----------------------------------------------
-let cssAtivo = null;
 
 function carregarCSS(tela) {
     const href = cssTelas[tela];
     if (!href) return;
-
-    // Remove o CSS anterior
     if (cssAtivo) cssAtivo.remove();
-
     const link = document.createElement('link');
-    link.rel = 'stylesheet';
+    link.rel  = 'stylesheet';
     link.href = href;
     document.head.appendChild(link);
     cssAtivo = link;
 }
-// -----------------------------------------------
-//  Carrega o HTML de uma tela via fetch
-// -----------------------------------------------
+
 async function carregarTela(tela) {
-    if (tela === telaAtiva && !forcarReload) return;
+    // Se clicar na mesma tela, ignora sem loop
+    if (tela === telaAtiva) return;
 
     const caminho = telas[tela];
 
-    // Telas ainda não implementadas
     if (!caminho) {
         conteudo.innerHTML = `
             <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;gap:12px;color:#999;">
@@ -64,55 +77,68 @@ async function carregarTela(tela) {
         return;
     }
 
-    // Mostra indicador de carregamento
     conteudo.innerHTML = `<div class="loading-tela">Carregando...</div>`;
+    telaAtiva = tela;
 
     try {
         const resposta = await fetch(caminho);
-
         if (!resposta.ok) throw new Error(`Erro ao carregar ${caminho}`);
 
         const html = await resposta.text();
-
-        // Extrai apenas o conteúdo do <body>
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
-        const bodyContent = doc.body.innerHTML;
+        conteudo.innerHTML = doc.body.innerHTML;
 
-        // Injeta o conteúdo na área principal
-        conteudo.innerHTML = bodyContent;
-
-        // Carrega o CSS específico da tela
         carregarCSS(tela);
-
-        // Re-executa os scripts da tela carregada
-        // Scripts externos são aguardados antes de executar os inline
-        // Scripts inline são isolados em IIFE para evitar conflito de variáveis entre telas
-        const scripts = Array.from(conteudo.querySelectorAll('script'));
-        for (const scriptAntigo of scripts) {
-            const scriptNovo = document.createElement('script');
-            if (scriptAntigo.src) {
-                await new Promise((resolve) => {
-                    scriptNovo.src = scriptAntigo.src;
-                    scriptNovo.onload = resolve;
-                    scriptNovo.onerror = resolve;
-                    document.body.appendChild(scriptNovo);
-                });
-            } else {
-                scriptNovo.textContent = `(function(){\n${scriptAntigo.textContent}\n})();`;
-                document.body.appendChild(scriptNovo);
-            }
-            scriptAntigo.remove();
-        }
-
         atualizarMenuAtivo(tela);
-        telaAtiva = tela;
-
-        // Rola para o topo ao trocar de tela
         conteudo.scrollTop = 0;
+
+    if (tela === 'dashboard') {
+    if (!window.Chart) {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+        script.onload = () => {
+            import('/controller/dashboard.ctrl.js')
+                .then(mod => mod.iniciarDashboard?.())
+                .catch(console.error);
+        };
+        document.head.appendChild(script);
+    } else {
+        import('/controller/dashboard.ctrl.js')
+            .then(mod => mod.iniciarDashboard?.())
+            .catch(console.error);
+    }
+}
+
+if (tela === 'profissionais') {
+    import('/controller/profissionais.ctrl.js')
+        .then(mod => mod.init?.())
+        .catch(console.error);
+}
+
+if (tela === 'documentos') {
+    import('/controller/documentos.ctrl.js')
+        .then(mod => mod.init?.())
+        .catch(console.error);
+}
+
+if (tela === 'alertas') {
+    import('/controller/alertas.ctrl.js')
+        .then(mod => mod.init?.())
+        .catch(console.error);
+}
+
+if (tela === 'importar_exportar') {
+    setTimeout(() => {
+        import('/controller/dados.ctrl.js')
+            .then(mod => mod.init?.())
+            .catch(console.error);
+    }, 100);
+}
 
     } catch (erro) {
         console.error(erro);
+        telaAtiva = null;
         conteudo.innerHTML = `
             <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;gap:12px;color:#c0392b;">
                 <i class='bx bx-error-circle' style="font-size:48px;"></i>
@@ -121,21 +147,13 @@ async function carregarTela(tela) {
     }
 }
 
-// -----------------------------------------------
-//  Atualiza o item ativo no menu lateral
-// -----------------------------------------------
 function atualizarMenuAtivo(tela) {
     document.querySelectorAll('.nav-link a[data-tela]').forEach(link => {
         link.classList.remove('ativo');
-        if (link.dataset.tela === tela) {
-            link.classList.add('ativo');
-        }
+        if (link.dataset.tela === tela) link.classList.add('ativo');
     });
 }
 
-// -----------------------------------------------
-//  Event listeners dos itens do menu
-// -----------------------------------------------
 document.querySelectorAll('.nav-link a[data-tela]').forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
@@ -143,7 +161,3 @@ document.querySelectorAll('.nav-link a[data-tela]').forEach(link => {
     });
 });
 
-// -----------------------------------------------
-//  Carrega o Dashboard ao iniciar
-// -----------------------------------------------
-carregarTela('dashboard');
