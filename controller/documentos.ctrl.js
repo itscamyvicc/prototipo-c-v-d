@@ -1,6 +1,5 @@
 // ============================================================
 // controller/documentos.ctrl.js
-// Lista documentos do Firebase e cadastra novos
 // ============================================================
 
 import { db } from "/firebase/firebase-config.js";
@@ -10,20 +9,38 @@ import {
     addDoc,
     orderBy,
     query,
-    serverTimestamp
+    serverTimestamp,
+    getDoc,   // ← adiciona
+    doc       // ← adiciona
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 export async function init() {
     if (!document.querySelector(".conteudo-lista")) return;
 
     await carregarDocumentos();
-    configurarFormulario();        // ← primeiro
-    await preencherSelectProfissionais(); // ← depois (já dentro do form clonado)
+    configurarFormulario();
+    await preencherSelectProfissionais();
     configurarBusca();
     configurarFiltro();
     configurarBtnNovo();
 }
 
+// ============================================================
+// HELPERS (primeiro para evitar ReferenceError)
+// ============================================================
+
+function fecharFormulario() {
+    document.querySelector(".tabela_primaria")?.classList.remove("ativo");
+}
+// ← adiciona aqui
+async function getDiasAlerta() {
+    try {
+        const snap = await getDoc(doc(db, "configuracoes", "sistema"));
+        return snap.exists() ? (snap.data().diasAntecedencia ?? 30) : 30;
+    } catch {
+        return 30;
+    }
+}
 // ============================================================
 // LISTAGEM
 // ============================================================
@@ -32,7 +49,7 @@ async function carregarDocumentos(filtroTexto = "", filtroTipo = "") {
     const container = document.querySelector(".conteudo-lista");
     if (!container) return;
 
-    // Limpa tudo exceto o topo-lista
+
     Array.from(container.children).forEach(el => {
         if (!el.classList.contains("topo-lista")) el.remove();
     });
@@ -72,14 +89,21 @@ async function carregarDocumentos(filtroTexto = "", filtroTipo = "") {
             return;
         }
 
-        documentos.forEach(doc => container.appendChild(criarCard(doc)));
+        const diasAlerta = await getDiasAlerta(); // ← adiciona essa
+        documentos.forEach(doc => container.appendChild(criarCard(doc, diasAlerta))); // ← troca essa
 
     } catch (erro) {
         console.error("Erro ao carregar documentos:", erro);
         loading.remove();
     }
 }
-function criarCard(doc) {
+
+
+// ============================================================
+// CARD
+// ============================================================
+
+function criarCard(doc, diasAlerta = 30) {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
 
@@ -88,7 +112,8 @@ function criarCard(doc) {
         ? Math.ceil((validade - hoje) / (1000 * 60 * 60 * 24))
         : null;
 
-    const limite = doc.alertarDias ?? 30;
+    const limite = doc.alertarDias ?? diasAlerta;
+
 
     let badgeHTML = "";
     if (diasRestantes === null) {
@@ -127,7 +152,7 @@ function criarCard(doc) {
 }
 
 // ============================================================
-// SELECT DE PROFISSIONAIS NO FORMULÁRIO
+// SELECT DE PROFISSIONAIS
 // ============================================================
 
 async function preencherSelectProfissionais() {
@@ -166,7 +191,7 @@ async function preencherSelectProfissionais() {
 }
 
 // ============================================================
-// FORMULÁRIO DE CADASTRO
+// FORMULÁRIO
 // ============================================================
 
 function configurarFormulario() {
@@ -176,22 +201,58 @@ function configurarFormulario() {
     const novoForm = form.cloneNode(true);
     form.parentNode.replaceChild(novoForm, form);
 
+    // ← busca DENTRO do novoForm após o clone
+    const dataEmissaoInput = novoForm.querySelector("#data-emissao");
+    const dataValidadeInput = novoForm.querySelector("#data-validade");
+    const anoAtual = new Date().getFullYear();
+// Bloqueia digitação de ano com mais de 4 dígitos
+[dataEmissaoInput, dataValidadeInput].forEach(input => {
+    if (!input) return;
+    input.addEventListener("input", () => {
+        if (!input.value) return;
+        const partes = input.value.split("-");
+        if (partes[0] && partes[0].length > 4) {
+            partes[0] = partes[0].slice(0, 4);
+            input.value = partes.join("-");
+        }
+    });
+});
 
     novoForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const selectProf = document.getElementById("profissional");
+        const selectProf = novoForm.querySelector("#profissional");
         const opcaoSelecionada = selectProf?.options[selectProf.selectedIndex];
+
+        const dataEmissaoVal = dataEmissaoInput?.value ?? "";
+        const dataValidadeVal = dataValidadeInput?.value ?? "";
+
+        // Validação no submit também (segurança extra)
+        if (dataEmissaoVal) {
+            const ano = new Date(dataEmissaoVal).getFullYear();
+            if (ano < 2000 || ano > anoAtual) {
+                alert("Data de emissão inválida. Verifique o ano informado.");
+                return;
+            }
+        }
+
+        if (dataValidadeVal) {
+            const ano = new Date(dataValidadeVal).getFullYear();
+            if (ano < 2000 || ano > anoAtual + 20) {
+                alert("Data de validade inválida. Verifique o ano informado.");
+                return;
+            }
+        }
 
         const dados = {
             profissionalId:   selectProf?.value ?? "",
             nomeProfissional: opcaoSelecionada?.dataset.nome ?? "",
-            tipoDocumento:    document.getElementById("tipo-documento")?.value?.toUpperCase() ?? "",
-            numeroDocumento:  document.getElementById("numero-documento")?.value.trim() ?? "",
-            orgaoEmissor:     document.getElementById("orgao-emissor")?.value.trim() ?? "",
-            dataEmissao:      document.getElementById("data-emissao")?.value ?? "",
-            dataValidade:     document.getElementById("data-validade")?.value ?? "",
-            alertarDias:      Number(document.getElementById("alertar-dias")?.value) || 30,
+            tipoDocumento:    novoForm.querySelector("#tipo-documento")?.value?.toUpperCase() ?? "",
+            numeroDocumento:  novoForm.querySelector("#numero-documento")?.value.trim() ?? "",
+            orgaoEmissor:     novoForm.querySelector("#orgao-emissor")?.value.trim() ?? "",
+            dataEmissao:      dataEmissaoVal,
+            dataValidade:     dataValidadeVal,
+            alertarDias:      Number(novoForm.querySelector("#alertar-dias")?.value) || 30,
             status:           "Ativo",
             criadoEm:         serverTimestamp()
         };
@@ -204,6 +265,7 @@ function configurarFormulario() {
             await addDoc(collection(db, "documentos"), dados);
             novoForm.reset();
             fecharFormulario();
+            await preencherSelectProfissionais();
             await carregarDocumentos();
 
         } catch (erro) {
@@ -215,9 +277,8 @@ function configurarFormulario() {
         }
     });
 }
-
 // ============================================================
-// BUSCA E FILTRO
+// BUSCA
 // ============================================================
 
 function configurarBusca() {
@@ -234,6 +295,10 @@ function configurarBusca() {
     });
 }
 
+// ============================================================
+// FILTRO
+// ============================================================
+
 function configurarFiltro() {
     const select = document.querySelector(".filtro select");
     if (!select) return;
@@ -245,7 +310,7 @@ function configurarFiltro() {
 }
 
 // ============================================================
-// ABRIR / FECHAR FORMULÁRIO
+// MODAL
 // ============================================================
 
 function configurarBtnNovo() {
@@ -257,10 +322,14 @@ function configurarBtnNovo() {
         document.querySelector(".tabela_primaria")?.classList.add("ativo");
     });
 
-    closeIcon?.addEventListener("click", fecharFormulario);
-    btnCancelar?.addEventListener("click", fecharFormulario);
-}
+    closeIcon?.addEventListener("click", () => {
+        document.getElementById("formInfo")?.reset();
+        fecharFormulario();
+    });
 
-function fecharFormulario() {
-    document.querySelector(".tabela_primaria")?.classList.remove("ativo");
+    btnCancelar?.addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById("formInfo")?.reset();
+        fecharFormulario();
+    });
 }

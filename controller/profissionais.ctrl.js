@@ -18,6 +18,19 @@ export async function init() {
     configurarBusca();
     configurarFiltro();
     configurarBtnNovo();
+    configurarMascaras();
+}
+
+// ============================================================
+// HELPERS (declarados primeiro para evitar ReferenceError)
+// ============================================================
+
+function fecharFormulario() {
+    document.querySelector(".tabela_primaria")?.classList.remove("ativo");
+}
+
+function capitalizar(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
 // ============================================================
@@ -28,10 +41,7 @@ async function carregarProfissionais(filtroNome = "", filtroCargo = "") {
     const container = document.querySelector(".conteudo-lista");
     if (!container) return;
 
-    // remove cards antigos
     container.querySelectorAll(".card-profissional").forEach(c => c.remove());
-
-    // remove mensagem antiga (se existir)
     container.querySelectorAll("p").forEach(p => {
         if (p.id !== "loading-profs") p.remove();
     });
@@ -48,9 +58,6 @@ async function carregarProfissionais(filtroNome = "", filtroCargo = "") {
 
         let profissionais = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-        // =========================
-        // FILTRO POR NOME
-        // =========================
         if (filtroNome) {
             const termo = filtroNome.toLowerCase();
             profissionais = profissionais.filter(p =>
@@ -60,28 +67,34 @@ async function carregarProfissionais(filtroNome = "", filtroCargo = "") {
             );
         }
 
-        // =========================
-        // FILTRO POR CARGO (CORRIGIDO)
-        // =========================
+        // includes() para pegar "Médica Plantonista" ao filtrar "médico"
         if (filtroCargo) {
             profissionais = profissionais.filter(p =>
-                p.cargo?.trim().toLowerCase() === filtroCargo.trim().toLowerCase()
+                p.cargo?.trim().toLowerCase().includes(filtroCargo.trim().toLowerCase())
             );
         }
+        // ORDENAÇÃO: ativos primeiro, depois por data de cadastro (mais recente primeiro)
+        const statusOrdem = ["ativo", "ferias", "afastado", "licenca", "inativo", "desligado"];
 
-        // =========================
-        // SEM RESULTADO
-        // =========================
+        profissionais.sort((a, b) => {
+            const ordemA = statusOrdem.indexOf(a.status?.toLowerCase() ?? "ativo");
+            const ordemB = statusOrdem.indexOf(b.status?.toLowerCase() ?? "ativo");
+
+            // primeiro ordena por status
+            if (ordemA !== ordemB) return ordemA - ordemB;
+
+            // depois por data de cadastro (mais recente primeiro)
+            const dataA = a.criadoEm?.seconds ?? 0;
+            const dataB = b.criadoEm?.seconds ?? 0;
+            return dataB - dataA;
+        });
+
         if (profissionais.length === 0) {
             const vazio = document.createElement("p");
             vazio.style.cssText = "text-align:center;color:#999;padding:32px;";
-
-            if (filtroNome || filtroCargo) {
-                vazio.textContent = "Nenhum resultado para o filtro aplicado.";
-            } else {
-                vazio.textContent = "Nenhum profissional cadastrado.";
-            }
-
+            vazio.textContent = (filtroNome || filtroCargo)
+                ? "Nenhum resultado para o filtro aplicado."
+                : "Nenhum profissional cadastrado.";
             container.appendChild(vazio);
             return;
         }
@@ -100,7 +113,7 @@ async function carregarProfissionais(filtroNome = "", filtroCargo = "") {
 
 function criarCard(prof) {
     const inicial = (prof.nome ?? "?")[0].toUpperCase();
-    const status  = prof.status ?? "ativo";
+    const status = prof.status ?? "ativo";
 
     const div = document.createElement("div");
     div.className = "card-profissional";
@@ -134,6 +147,20 @@ function configurarFormulario() {
     const novoForm = form.cloneNode(true);
     form.parentNode.replaceChild(novoForm, form);
 
+    // Reaplica máscaras após clonar
+    configurarMascaras();
+
+    // ← busca DENTRO do novoForm, depois do clone
+    const dataInput = novoForm.querySelector("input[type='date']");
+    dataInput?.addEventListener("blur", () => {
+        if (!dataInput.value) return;
+        const ano = new Date(dataInput.value).getFullYear();
+        if (ano < 2000 || ano > new Date().getFullYear()) {
+            alert("Ano inválido. Verifique a data informada.");
+            dataInput.value = "";
+        }
+    });
+
     novoForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -155,13 +182,22 @@ function configurarFormulario() {
         btnCadastrar.disabled = true;
         btnCadastrar.textContent = "Salvando...";
 
+        const dataAdmissao = campos[6].value;
+        if (dataAdmissao) {
+            const ano = new Date(dataAdmissao).getFullYear();
+            if (ano < 2000 || ano > new Date().getFullYear()) {
+                alert("Data de admissão inválida. Verifique o ano informado.");
+                btnCadastrar.disabled = false;
+                btnCadastrar.textContent = "Cadastrar";
+                return;
+            }
+        }
+
         try {
             await addDoc(collection(db, "profissionais"), dados);
-
             novoForm.reset();
             fecharFormulario();
             await carregarProfissionais();
-
         } catch (erro) {
             console.error("Erro ao cadastrar:", erro);
             alert("Erro ao cadastrar.");
@@ -170,6 +206,33 @@ function configurarFormulario() {
             btnCadastrar.textContent = "Cadastrar";
         }
     });
+}
+
+// ============================================================
+// MÁSCARAS
+// ============================================================
+
+function configurarMascaras() {
+    const cpfInput = document.getElementById("cpf");
+    if (cpfInput) {
+        cpfInput.addEventListener("input", () => {
+            let v = cpfInput.value.replace(/\D/g, "").slice(0, 11);
+            if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, "$1.$2.$3-$4");
+            else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
+            else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, "$1.$2");
+            cpfInput.value = v;
+        });
+    }
+
+    const telInput = document.getElementById("telefone");
+    if (telInput) {
+        telInput.addEventListener("input", () => {
+            let v = telInput.value.replace(/\D/g, "").slice(0, 11);
+            if (v.length > 6) v = v.replace(/(\d{2})(\d{5})(\d{1,4})/, "($1) $2-$3");
+            else if (v.length > 2) v = v.replace(/(\d{2})(\d{1,5})/, "($1) $2");
+            telInput.value = v;
+        });
+    }
 }
 
 // ============================================================
@@ -209,31 +272,22 @@ function configurarFiltro() {
 // ============================================================
 
 function configurarBtnNovo() {
-    const btnNovo     = document.querySelector(".btn-novo");
-    const closeIcon   = document.querySelector(".close-icon");
+    const btnNovo = document.querySelector(".btn-novo");
+    const closeIcon = document.querySelector(".close-icon");
     const btnCancelar = document.querySelector(".btn-cancelar");
 
     btnNovo?.addEventListener("click", () => {
         document.querySelector(".tabela_primaria")?.classList.add("ativo");
     });
 
-    closeIcon?.addEventListener("click", fecharFormulario);
+    closeIcon?.addEventListener("click", () => {
+        document.getElementById("formInfo")?.reset();
+        fecharFormulario();
+    });
 
     btnCancelar?.addEventListener("click", (e) => {
         e.preventDefault();
         document.getElementById("formInfo")?.reset();
         fecharFormulario();
     });
-}
-
-function fecharFormulario() {
-    document.querySelector(".tabela_primaria")?.classList.remove("ativo");
-}
-
-// ============================================================
-// HELPERS
-// ============================================================
-
-function capitalizar(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }

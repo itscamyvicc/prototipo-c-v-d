@@ -41,112 +41,161 @@ export async function init() {
 
     // Importar
     btnImportar?.addEventListener("click", async () => {
-        setMensagem(msgImport, "", null);
-        const file = inputArquivo?.files[0];
+    setMensagem(msgImport, "", null);
+    const file = inputArquivo?.files[0];
 
-        if (!file) {
-            setMensagem(msgImport, "Selecione um arquivo CSV primeiro.", "erro");
+    if (!file) {
+        setMensagem(msgImport, "Selecione um arquivo CSV primeiro.", "erro");
+        return;
+    }
+
+    btnImportar.disabled = true;
+    btnImportar.textContent = "Importando...";
+
+    try {
+        const texto = await file.text();
+        const linhas = texto.split(/\r?\n/).filter(l => l.trim().length > 0);
+
+        if (linhas.length <= 1) {
+            setMensagem(msgImport, "Arquivo CSV vazio ou sem dados.", "erro");
             return;
         }
 
-        btnImportar.disabled = true;
-        btnImportar.textContent = "Importando...";
+        const cabecalhos = linhas[0].split(";").map(h => h.trim());
+        const idx = (nome) => cabecalhos.indexOf(nome);
 
-        try {
-            const texto = await file.text();
-            const linhas = texto.split(/\r?\n/).filter(l => l.trim().length > 0);
-
-            if (linhas.length <= 1) {
-                setMensagem(msgImport, "Arquivo CSV vazio ou sem dados.", "erro");
-                return;
-            }
-
-            const cabecalhos = linhas[0].split(";").map(h => h.trim());
-            const idx = (nome) => cabecalhos.indexOf(nome);
-
-            const camposObrig = ["nome", "cpf", "cargo", "setor", "email", "telefone", "dataAdmissao", "status"];
-            const faltando = camposObrig.filter(c => idx(c) === -1);
-            if (faltando.length) {
-                setMensagem(msgImport, `Colunas ausentes no CSV: ${faltando.join(", ")}`, "erro");
-                return;
-            }
-
-            const batch = writeBatch(db);
-            let total = 0;
-
-            for (let i = 1; i < linhas.length; i++) {
-                const partes = linhas[i].split(";");
-                if (partes.length < cabecalhos.length) continue;
-
-                const dados = {
-                    nome:         partes[idx("nome")]?.trim()         || "",
-                    cpf:          partes[idx("cpf")]?.trim()          || "",
-                    cargo:        partes[idx("cargo")]?.trim()        || "",
-                    setor:        partes[idx("setor")]?.trim()        || "",
-                    email:        partes[idx("email")]?.trim()        || "",
-                    telefone:     partes[idx("telefone")]?.trim()     || "",
-                    dataAdmissao: partes[idx("dataAdmissao")]?.trim() || "",
-                    status:       partes[idx("status")]?.trim()       || "",
-                    createdAt:    serverTimestamp()
-                };
-
-                const ref = doc(profissionaisRef);
-                batch.set(ref, dados);
-                total++;
-            }
-
-            if (!total) {
-                setMensagem(msgImport, "Nenhuma linha válida encontrada.", "erro");
-                return;
-            }
-
-            await batch.commit();
-            setMensagem(msgImport, `${total} registro(s) importado(s) com sucesso!`, "sucesso");
-
-        } catch (err) {
-            console.error("Erro ao importar:", err);
-            setMensagem(msgImport, "Erro ao importar. Verifique o formato e tente novamente.", "erro");
-        } finally {
-            btnImportar.disabled = false;
-            btnImportar.textContent = "Importar Arquivo";
+        const camposObrig = ["nome", "cpf", "cargo", "setor", "email", "telefone", "dataAdmissao", "status"];
+        const faltando = camposObrig.filter(c => idx(c) === -1);
+        if (faltando.length) {
+            setMensagem(msgImport, `Colunas ausentes no CSV: ${faltando.join(", ")}`, "erro");
+            return;
         }
-    });
+
+        // ← NOVO: busca CPFs já existentes para evitar duplicata
+        const snapAtual = await getDocs(profissionaisRef);
+        const cpfsExistentes = new Set(
+            snapAtual.docs.map(d => d.data().cpf?.trim())
+        );
+
+        const batch = writeBatch(db);
+        let total = 0;
+        let duplicatas = 0;
+
+        for (let i = 1; i < linhas.length; i++) {
+            const partes = linhas[i].split(";");
+            if (partes.length < cabecalhos.length) continue;
+
+            const cpf = partes[idx("cpf")]?.trim() || "";
+
+            // ← NOVO: pula se CPF já existe
+            if (cpf && cpfsExistentes.has(cpf)) {
+                duplicatas++;
+                continue;
+            }
+
+            const dados = {
+                nome:         partes[idx("nome")]?.trim()         || "",
+                cpf:          cpf,
+                cargo:        partes[idx("cargo")]?.trim()        || "",
+                setor:        partes[idx("setor")]?.trim()        || "",
+                email:        partes[idx("email")]?.trim()        || "",
+                telefone:     partes[idx("telefone")]?.trim()     || "",
+                dataAdmissao: partes[idx("dataAdmissao")]?.trim() || "",
+                status:       partes[idx("status")]?.trim()       || "",
+                criadoEm:     serverTimestamp()
+            };
+
+            const ref = doc(profissionaisRef);
+            batch.set(ref, dados);
+            total++;
+        }
+
+        if (!total && duplicatas > 0) {
+            setMensagem(msgImport, `Todos os ${duplicatas} registro(s) já estão cadastrados.`, "erro");
+            return;
+        }
+
+        if (!total) {
+            setMensagem(msgImport, "Nenhuma linha válida encontrada.", "erro");
+            return;
+        }
+
+        await batch.commit();
+
+        // ← NOVO: mensagem diferente se teve duplicatas ignoradas
+        const msg = duplicatas > 0
+            ? `${total} importado(s), ${duplicatas} ignorado(s) por já existirem.`
+            : `${total} registro(s) importado(s) com sucesso!`;
+
+        setMensagem(msgImport, msg, "sucesso");
+
+    } catch (err) {
+        console.error("Erro ao importar:", err);
+        setMensagem(msgImport, "Erro ao importar. Verifique o formato e tente novamente.", "erro");
+    } finally {
+        btnImportar.disabled = false;
+        btnImportar.textContent = "Importar Arquivo";
+    }
+});
 
     // Exportar
-    btnExportar?.addEventListener("click", async () => {
-        setMensagem(msgExport, "Gerando arquivo...", null);
-        btnExportar.disabled = true;
-        btnExportar.textContent = "Gerando...";
+  btnExportar?.addEventListener("click", async () => {
+    setMensagem(msgExport, "Gerando arquivo...", null);
+    btnExportar.disabled = true;
+    btnExportar.textContent = "Gerando...";
 
-        try {
-            const snap = await getDocs(profissionaisRef);
-            const cabecalho = ["nome", "cpf", "cargo", "setor", "email", "telefone", "dataAdmissao", "status"];
-            const linhas = [cabecalho.join(";")];
+    try {
+        const snap = await getDocs(profissionaisRef);
+        const cabecalho = ["nome", "cpf", "cargo", "setor", "email", "telefone", "dataAdmissao", "status"];
+        const linhas = [cabecalho.join(";")];
 
-            snap.forEach(docSnap => {
-                const d = docSnap.data();
-                const linha = cabecalho.map(c => `"${String(d[c] || "").replace(/"/g, '""')}"`);
-                linhas.push(linha.join(";"));
-            });
+        snap.forEach(docSnap => {
+            const d = docSnap.data();
 
-            const blob = new Blob([linhas.join("\r\n")], { type: "text/csv;charset=utf-8;" });
-            const url  = URL.createObjectURL(blob);
-            const a    = document.createElement("a");
-            a.href     = url;
-            a.download = "cvd_profissionais.csv";
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
+            // Converte Timestamp do Firebase para data legível
+            let dataAdmissao = d.dataAdmissao || "";
+            if (dataAdmissao?.seconds) {
+                const date = new Date(dataAdmissao.seconds * 1000);
+                dataAdmissao = date.toLocaleDateString("pt-BR");
+            }
 
-            setMensagem(msgExport, "CSV gerado com sucesso!", "sucesso");
+            // Prefixa CPF e telefone com ' para Excel tratar como texto
+            const cpf      = d.cpf      ? `'${d.cpf}`      : "";
+            const telefone = d.telefone ? `'${d.telefone}` : "";
 
-        } catch (err) {
-            console.error("Erro ao exportar:", err);
-            setMensagem(msgExport, "Erro ao exportar. Verifique o console.", "erro");
-        } finally {
-            btnExportar.disabled = false;
-            btnExportar.textContent = "Exportar CSV Combinado";
-        }
-    });
+            const linha = [
+                `"${(d.nome      || "").replace(/"/g, '""')}"`,
+                `"${cpf}"`,
+                `"${(d.cargo     || "").replace(/"/g, '""')}"`,
+                `"${(d.setor     || "").replace(/"/g, '""')}"`,
+                `"${(d.email     || "").replace(/"/g, '""')}"`,
+                `"${telefone}"`,
+                `"${dataAdmissao}"`,
+                `"${(d.status    || "").replace(/"/g, '""')}"`,
+            ];
+            linhas.push(linha.join(";"));
+        });
+
+        // BOM UTF-8 corrige acentuação no Excel
+        const BOM = "\uFEFF";
+        const blob = new Blob([BOM + linhas.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement("a");
+        a.href     = url;
+        a.download = "cvd_profissionais.csv";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
+        setMensagem(msgExport, "CSV gerado com sucesso!", "sucesso");
+
+    } catch (err) {
+        console.error("Erro ao exportar:", err);
+        setMensagem(msgExport, "Erro ao exportar. Verifique o console.", "erro");
+    } finally {
+        btnExportar.disabled = false;
+        btnExportar.textContent = "Exportar CSV Combinado";
+    }
+});
 }

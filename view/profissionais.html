@@ -67,7 +67,7 @@
 
                 <div class="input-field">
                     <label>Data de Admissão</label>
-                    <input type="date">
+                    <input type="date" id="dataAdmissao" min="2000-01-01">
                 </div>
 
                 <div class="input-field">
@@ -104,15 +104,15 @@
                 <input type="text" placeholder="Buscar por nome, CPF ou e-mail...">
             </div>
 
-            <div class="filtro">
-                <select>
-                    <option value="">Todos os Cargos</option>
-                    <option value="Médico">Médico</option>
-                    <option value="Enfermeiro">Enfermeiro</option>
-                    <option value="Recepcionista">Recepcionista</option>
-                </select>
-            </div>
-        </div>
+                    <!-- FILTROS -->
+       <div class="filtro">
+    <select>
+        <option value="">Todos os Cargos</option>
+        <option value="méd">Médico / Médica</option>
+        <option value="enferm">Enfermeiro / Enfermeira</option>
+        <option value="recepcion">Recepcionista</option>
+    </select>
+</div>
 
         <!-- CARDS SERÃO INSERIDOS VIA JS -->
 

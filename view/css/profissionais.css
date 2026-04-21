@@ -289,3 +289,27 @@ form .fields .input-field {
 }
 
 .info { flex: 1; }
+/* ===== CORREÇÕES ===== */
+
+/* Esconde o form por padrão, mostra só quando .ativo */
+.tabela_primaria {
+    display: none;
+}
+.tabela_primaria.ativo {
+    display: block;
+}
+
+/* Badges de status que faltavam */
+.badge.inativo    { background: #f0f0f0; color: #888; }
+.badge.afastado   { background: #fde8e8; color: #c0392b; }
+.badge.ferias     { background: #fff3cd; color: #b78103; }
+.badge.licenca    { background: #fde8e8; color: #c0392b; }
+.badge.desligado  { background: #f0f0f0; color: #555; }
+.tabela_primaria { display: none; }
+.tabela_primaria.ativo { display: block; }
+
+.badge.inativo   { background: #f0f0f0; color: #888; }
+.badge.afastado  { background: #fde8e8; color: #c0392b; }
+.badge.ferias    { background: #fff3cd; color: #b78103; }
+.badge.licenca   { background: #fde8e8; color: #c0392b; }
+.badge.desligado { background: #f0f0f0; color: #555; }
