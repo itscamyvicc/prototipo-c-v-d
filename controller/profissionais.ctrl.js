@@ -7,6 +7,8 @@ import {
     collection,
     getDocs,
     addDoc,
+    updateDoc,
+    doc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -22,11 +24,29 @@ export async function init() {
 }
 
 // ============================================================
-// HELPERS (declarados primeiro para evitar ReferenceError)
+// POPUP DE SUCESSO
+// ============================================================
+
+function mostrarPopup(titulo, mensagem) {
+    document.getElementById("popup-titulo").textContent = titulo;
+    document.getElementById("popup-mensagem").textContent = mensagem;
+    document.getElementById("popup-sucesso").classList.add("ativo");
+}
+
+// ============================================================
+// HELPERS
 // ============================================================
 
 function fecharFormulario() {
     document.querySelector(".tabela_primaria")?.classList.remove("ativo");
+
+    const titulo = document.querySelector(".tabela_primaria header");
+    const btnCadastrar = document.querySelector(".btn-cadastrar");
+    if (titulo) titulo.textContent = "Novo Profissional";
+    if (btnCadastrar) {
+        btnCadastrar.textContent = "Cadastrar";
+        delete btnCadastrar.dataset.editandoId;
+    }
 }
 
 function capitalizar(str) {
@@ -67,23 +87,18 @@ async function carregarProfissionais(filtroNome = "", filtroCargo = "") {
             );
         }
 
-        // includes() para pegar "Médica Plantonista" ao filtrar "médico"
         if (filtroCargo) {
             profissionais = profissionais.filter(p =>
                 p.cargo?.trim().toLowerCase().includes(filtroCargo.trim().toLowerCase())
             );
         }
-        // ORDENAÇÃO: ativos primeiro, depois por data de cadastro (mais recente primeiro)
+
         const statusOrdem = ["ativo", "ferias", "afastado", "licenca", "inativo", "desligado"];
 
         profissionais.sort((a, b) => {
             const ordemA = statusOrdem.indexOf(a.status?.toLowerCase() ?? "ativo");
             const ordemB = statusOrdem.indexOf(b.status?.toLowerCase() ?? "ativo");
-
-            // primeiro ordena por status
             if (ordemA !== ordemB) return ordemA - ordemB;
-
-            // depois por data de cadastro (mais recente primeiro)
             const dataA = a.criadoEm?.seconds ?? 0;
             const dataB = b.criadoEm?.seconds ?? 0;
             return dataB - dataA;
@@ -133,7 +148,36 @@ function criarCard(prof) {
             <p><i class='bx bx-phone'></i> ${prof.telefone ?? "—"}</p>
         </div>
     `;
+
+    div.querySelector(".edit-icon").addEventListener("click", () => abrirEdicao(prof));
+
     return div;
+}
+
+// ============================================================
+// ABRIR EDIÇÃO
+// ============================================================
+
+function abrirEdicao(prof) {
+    const form = document.getElementById("formInfo");
+    const campos = form.querySelectorAll("input, select");
+    const titulo = document.querySelector(".tabela_primaria header");
+    const btnCadastrar = form.querySelector(".btn-cadastrar");
+
+    campos[0].value = prof.nome         ?? "";
+    campos[1].value = prof.cpf          ?? "";
+    campos[2].value = prof.cargo        ?? "";
+    campos[3].value = prof.setor        ?? "";
+    campos[4].value = prof.email        ?? "";
+    campos[5].value = prof.telefone     ?? "";
+    campos[6].value = prof.dataAdmissao ?? "";
+    campos[7].value = prof.status       ?? "";
+
+    titulo.textContent = "Editar Profissional";
+    btnCadastrar.textContent = "Salvar";
+    btnCadastrar.dataset.editandoId = prof.id;
+
+    document.querySelector(".tabela_primaria")?.classList.add("ativo");
 }
 
 // ============================================================
@@ -147,24 +191,27 @@ function configurarFormulario() {
     const novoForm = form.cloneNode(true);
     form.parentNode.replaceChild(novoForm, form);
 
-    // Reaplica máscaras após clonar
     configurarMascaras();
 
-    // ← busca DENTRO do novoForm, depois do clone
     const dataInput = novoForm.querySelector("input[type='date']");
-    dataInput?.addEventListener("blur", () => {
-        if (!dataInput.value) return;
-        const ano = new Date(dataInput.value).getFullYear();
-        if (ano < 2000 || ano > new Date().getFullYear()) {
-            alert("Ano inválido. Verifique a data informada.");
-            dataInput.value = "";
-        }
-    });
+    const anoAtual = new Date().getFullYear();
+    dataInput?.setAttribute("max", `${anoAtual}-12-31`);
 
     novoForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const campos = novoForm.querySelectorAll("input, select");
+        const btnCadastrar = novoForm.querySelector(".btn-cadastrar");
+        const editandoId = btnCadastrar.dataset.editandoId;
+
+        const dataAdmissao = campos[6].value;
+        if (dataAdmissao) {
+            const ano = new Date(dataAdmissao).getFullYear();
+            if (ano < 2000 || ano > new Date().getFullYear()) {
+                alert("Data de admissão inválida. Verifique o ano informado.");
+                return;
+            }
+        }
 
         const dados = {
             nome:         campos[0].value.trim(),
@@ -173,37 +220,35 @@ function configurarFormulario() {
             setor:        campos[3].value.trim(),
             email:        campos[4].value.trim(),
             telefone:     campos[5].value.trim(),
-            dataAdmissao: campos[6].value,
+            dataAdmissao: dataAdmissao,
             status:       campos[7].value,
-            criadoEm:     serverTimestamp()
         };
 
-        const btnCadastrar = novoForm.querySelector(".btn-cadastrar");
         btnCadastrar.disabled = true;
         btnCadastrar.textContent = "Salvando...";
 
-        const dataAdmissao = campos[6].value;
-        if (dataAdmissao) {
-            const ano = new Date(dataAdmissao).getFullYear();
-            if (ano < 2000 || ano > new Date().getFullYear()) {
-                alert("Data de admissão inválida. Verifique o ano informado.");
-                btnCadastrar.disabled = false;
-                btnCadastrar.textContent = "Cadastrar";
-                return;
-            }
-        }
-
         try {
-            await addDoc(collection(db, "profissionais"), dados);
-            novoForm.reset();
-            fecharFormulario();
-            await carregarProfissionais();
+            if (editandoId) {
+                await updateDoc(doc(db, "profissionais", editandoId), dados);
+                novoForm.reset();
+                fecharFormulario();
+                await carregarProfissionais();
+                mostrarPopup("Profissional atualizado!", "As informações foram salvas com sucesso.");
+            } else {
+                dados.criadoEm = serverTimestamp();
+                await addDoc(collection(db, "profissionais"), dados);
+                novoForm.reset();
+                fecharFormulario();
+                await carregarProfissionais();
+                mostrarPopup("Profissional cadastrado!", "O profissional foi adicionado com sucesso.");
+            }
+
         } catch (erro) {
-            console.error("Erro ao cadastrar:", erro);
-            alert("Erro ao cadastrar.");
+            console.error("Erro ao salvar:", erro);
+            alert("Erro ao salvar. Tente novamente.");
         } finally {
             btnCadastrar.disabled = false;
-            btnCadastrar.textContent = "Cadastrar";
+            btnCadastrar.textContent = editandoId ? "Salvar" : "Cadastrar";
         }
     });
 }
@@ -268,12 +313,12 @@ function configurarFiltro() {
 }
 
 // ============================================================
-// MODAL
+// MODAL — botão novo, fechar, cancelar, popup
 // ============================================================
 
 function configurarBtnNovo() {
-    const btnNovo = document.querySelector(".btn-novo");
-    const closeIcon = document.querySelector(".close-icon");
+    const btnNovo    = document.querySelector(".btn-novo");
+    const closeIcon  = document.querySelector(".close-icon");
     const btnCancelar = document.querySelector(".btn-cancelar");
 
     btnNovo?.addEventListener("click", () => {
@@ -289,5 +334,10 @@ function configurarBtnNovo() {
         e.preventDefault();
         document.getElementById("formInfo")?.reset();
         fecharFormulario();
+    });
+
+    // Fechar popup
+    document.getElementById("popup-fechar")?.addEventListener("click", () => {
+        document.getElementById("popup-sucesso").classList.remove("ativo");
     });
 }

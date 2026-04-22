@@ -313,3 +313,59 @@ form .fields .input-field {
 .badge.ferias    { background: #fff3cd; color: #b78103; }
 .badge.licenca   { background: #fde8e8; color: #c0392b; }
 .badge.desligado { background: #f0f0f0; color: #555; }
+
+.input-field input:invalid {
+    border-color: #ff7782;
+}
+#popup-sucesso {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+#popup-sucesso.ativo { display: flex; }
+
+.popup-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 40px 48px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    max-width: 360px;
+    width: 90%;
+    animation: popupEntrar 0.25s ease;
+}
+
+.popup-icone {
+    width: 64px; height: 64px;
+    background: #dcfce7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 2rem;
+    color: #1b8a5a;
+}
+
+#popup-titulo { font-size: 1.1rem; font-weight: 700; color: #003366; margin-bottom: 8px; }
+#popup-mensagem { font-size: 0.875rem; color: #64748b; margin-bottom: 24px; }
+
+#popup-fechar {
+    background: linear-gradient(to right, #015cb9, #013973);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 32px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+@keyframes popupEntrar {
+    from { transform: scale(0.85); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}

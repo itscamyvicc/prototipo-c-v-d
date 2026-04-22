@@ -4,109 +4,129 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Documentos</title>
-    <!-- ===== CSS ===== -->
+    <!-- CSS -->
     <link rel="stylesheet" href="/view/css/documentos.css">
-
-    <!-- ===== BOXICONS ===== -->
+    <!-- BOXICONS -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
 
-    <!-- ===== CABEÇALHO DA PÁGINA ===== -->
-    <div class="page-header">
-        <div class="page-header-left">
-            <h1>Documentos</h1>
-            <p>Controle de validade e status de documentos</p>
-        </div>
-        <button class="btn-novo">
-            <i class='bx bx-plus'></i> Novo Documento
-        </button>
+<!-- ===== CABEÇALHO ===== -->
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>Documentos</h1>
+        <p>Controle de validade e status de documentos</p>
     </div>
-    <!-- ===== FIM DO CABEÇALHO DA OÁGINA ===== -->
+    <button class="btn-novo">
+        <i class='bx bx-plus'></i> Novo Documento
+    </button>
+</div>
+<!-- ===== FIM CABEÇALHO ===== -->
 
-    <!-- ===== TABELA DE CADASTRO ===== -->
-    <div class="tabela_primaria">
-        <div class="header-container">
-            <header>Novo Documento</header>
-            <i class='bx bx-x close-icon'></i>
-        </div>
-        <form action="#" id="formInfo">
-            <div class="details">
-
-                <div class="fields">
-                    <div class="input-field full-width">
-                        <label>Profissional <span class="obrigatorio">*</span></label>
-                        <input type="text" id="profissional" placeholder="" required>
-                    </div>
-
-                    <div class="input-field">
-                        <label>Tipo de Documento <span class="obrigatorio">*</span></label>
-                        <select id="tipo-documento" placeholder="COREN" required>
-                            <option value="coren">COREN</option>
-                            <option value="crm">CRM</option>
-                            <option value="crf">CRF</option>
-                            <option value="habilitacao">Habilitação</option>
-                            <option value="outros">Outros</option>
-                        </select>
-                    </div>
-                    <div class="input-field">
-                        <label>Número do Documento</label>
-                        <input type="text" id="numero-documento" placeholder="">
-                    </div>
-
-                    <div class="input-field">
-                        <label>Órgão Emissor</label>
-                        <input type="text" id="orgao-emissor" placeholder="">
-                    </div>
-                    <div class="input-field">
-                        <label>Data de Emissão</label>
-                        <input type="date" id="data-emissao" min="2000-01-01" max="2099-12-31">
-                    </div>
-
-                    <div class="input-field">
-                        <label>Data de Validade</label>
-                        <input type="date" id="data-validade" min="2000-01-01" max="2099-12-31">
-                    </div>
-                    <div class="input-field">
-                        <label>Alertar (em dias) <span class="obrigatorio">*</span></label>
-                        <input type="number" id="alertar-dias" placeholder="30" value="30" min="1" required>
-                    </div>
-                </div>
-                <div class="form-actions">
-                <button class="button btn-cancelar" type="reset">Cancelar</button>
-                <button class="button btn-cadastrar" type="submit">Cadastrar</button>
-                </div>
-            </div>
-        </form>
+<!-- ===== MODAL / FORM ===== -->
+<div class="tabela_primaria">
+    <div class="header-container">
+        <header>Novo Documento</header>
+        <i class='bx bx-x close-icon'></i>
     </div>
-    <!-- ===== FIM DA TABELA DE CADASTRO ===== -->
 
-    <!-- ===== LISTA DE DOCUMENTOS ===== -->
-    <section class="lista-profissionais">
-        <div class="conteudo-lista">
+    <form action="#" id="formInfo">
+        <div class="details">
+            <div class="fields">
 
-            <!-- ===== FILTRAGEM ===== -->
-            <div class="topo-lista">
-                <div class="busca">
-                    <i class='bx bx-search'></i>
-                    <input type="text" placeholder="Buscar por profissional ou número do documento...">
-                </div>
-                <div class="filtro">
-                    <select>
-                        <option>Todos os Tipos</option>
-                        <option>COREN</option>
-                        <option>CRM</option>
-                        <option>CRF</option>
-                        <option>Habilitação</option>
-                        <option>Outros</option>
+                <div class="input-field full-width">
+                    <label>Profissional <span class="obrigatorio">*</span></label>
+                    <select id="profissional" required>
+                        <option value="" disabled selected>Selecione o profissional</option>
+                        <!-- Preenchido via JS -->
                     </select>
                 </div>
+
+                <div class="input-field">
+                    <label>Tipo de Documento <span class="obrigatorio">*</span></label>
+                    <select id="tipo-documento" required>
+                        <option value="" disabled selected>Selecione o tipo</option>
+                        <option value="COREN">COREN</option>
+                        <option value="CRM">CRM</option>
+                        <option value="CRF">CRF</option>
+                        <option value="Habilitação">Habilitação</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+
+                <div class="input-field">
+                    <label>Número do Documento <span class="obrigatorio">*</span></label>
+                    <input type="text" id="numero-documento" placeholder="Ex: 123456" required>
+                </div>
+
+                <div class="input-field">
+                    <label>Órgão Emissor <span class="obrigatorio">*</span></label>
+                    <input type="text" id="orgao-emissor" placeholder="Ex: COREN-SP" required>
+                </div>
+
+                <div class="input-field">
+                    <label>Data de Emissão <span class="obrigatorio">*</span></label>
+                    <input type="date" id="data-emissao" min="2000-01-01" required>
+                </div>
+
+                <div class="input-field">
+                    <label>Data de Validade <span class="obrigatorio">*</span></label>
+                    <input type="date" id="data-validade" min="2000-01-01" required>
+                </div>
+
+                <div class="input-field">
+                    <label>Alertar (em dias) <span class="obrigatorio">*</span></label>
+                    <input type="number" id="alertar-dias" value="30" min="1" required>
+                </div>
+
             </div>
 
+            <div class="form-actions">
+                <button class="button btn-cancelar" type="reset">Cancelar</button>
+                <button class="button btn-cadastrar" type="submit">Cadastrar</button>
+            </div>
         </div>
-    </section>
-    <!-- ===== FIM DA LISTA DE DOCUMENTOS ===== -->
+    </form>
+</div>
+<!-- ===== FIM FORM ===== -->
 
-    <!-- ===== SCRIPTS ===== -->
+<!-- ===== POPUP SUCESSO ===== -->
+<div id="popup-sucesso">
+    <div class="popup-box">
+        <div class="popup-icone">✓</div>
+        <h3 id="popup-titulo"></h3>
+        <p id="popup-mensagem"></p>
+        <button id="popup-fechar">OK</button>
+    </div>
+</div>
+<!-- ===== FIM POPUP ===== -->
+
+<!-- ===== LISTA DE DOCUMENTOS ===== -->
+<section class="lista-documentos">
+    <div class="conteudo-lista">
+
+        <div class="topo-lista">
+            <div class="busca">
+                <i class='bx bx-search'></i>
+                <input type="text" placeholder="Buscar por profissional ou número do documento...">
+            </div>
+            <div class="filtro">
+                <select>
+                    <option value="">Todos os Tipos</option>
+                    <option value="COREN">COREN</option>
+                    <option value="CRM">CRM</option>
+                    <option value="CRF">CRF</option>
+                    <option value="Habilitação">Habilitação</option>
+                    <option value="Outros">Outros</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- CARDS INSERIDOS VIA JS -->
+
+    </div>
+</section>
+<!-- ===== FIM LISTA ===== -->
+
 </body>
 </html>
