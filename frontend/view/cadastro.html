@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - CVD</title>
+    <link rel="stylesheet" href="/assets/login_cadastro.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="lado-esquerdo">
+            <div class="logo-container">
+                <div class="logo">
+                    <img src="/view/img/logo.png" alt="logo CVD">
+                </div>
+                <h1>CVD</h1>
+                <p>Controle de Validade<br>Documental</p>
+            </div>
+        </div>
+
+        <div class="lado-direito">
+            <div class="form-container">
+
+                <a href="login.html" class="btn-voltar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                    </svg>
+                    Voltar
+                </a>
+
+                <div class="form-header">
+                    <h2>Crie sua conta</h2>
+                </div>
+
+                <!-- Alerta de erro/sucesso -->
+                <div id="register-alert" style="display:none; margin-bottom:12px;"></div>
+
+                <form id="formCadastro">
+                    <div class="input-group">
+                        <label for="reg-email">E-mail</label>
+                        <input type="email" id="reg-email" placeholder="seuemail@exemplo.com" required>
+                        <span id="reg-email-err" style="color:red; font-size:12px;"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reg-password">Senha</label>
+                        <input type="password" id="reg-password" placeholder="Mínimo 10 caracteres" required>
+                        <span id="reg-password-err" style="color:red; font-size:12px;"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reg-confirm">Confirme sua senha</label>
+                        <input type="password" id="reg-confirm" placeholder="Repita a senha" required>
+                        <span id="reg-confirm-err" style="color:red; font-size:12px;"></span>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Criar Conta</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth } from "/firebase/firebase-config.js";
+        import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+        function clearAlerts() {
+            const el = document.getElementById('register-alert');
+            el.style.display = 'none';
+            el.textContent = '';
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('span[id$="-err"]').forEach(el => el.textContent = '');
+        }
+
+        function showErr(id, msg) {
+            document.getElementById(id).textContent = msg;
+        }
+
+        function setAlert(id, tipo, msg) {
+            const el = document.getElementById(id);
+            el.textContent = msg;
+            el.style.display = 'block';
+            el.style.color = tipo === 'error' ? 'red' : 'green';
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        document.getElementById('formCadastro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearAlerts(); clearErrors();
+
+            const email    = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const confirm  = document.getElementById('reg-confirm').value;
+
+            let valid = true;
+            if (!isValidEmail(email))      { showErr('reg-email-err', 'Informe um e-mail válido.'); valid = false; }
+            if (password.length < 10)      { showErr('reg-password-err', 'Mínimo 10 caracteres.'); valid = false; }
+            if (password !== confirm)      { showErr('reg-confirm-err', 'As senhas não coincidem.'); valid = false; }
+            if (!valid) return;
+
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                setAlert('register-alert', 'success', 'Cadastro realizado! Redirecionando...');
+                setTimeout(() => window.location.replace('/view/login.html'), 1500);
+
+            } catch (erro) {
+                if (erro.code === 'auth/email-already-in-use') {
+                    setAlert('register-alert', 'error', 'Este e-mail já está cadastrado.');
+                } else {
+                    setAlert('register-alert', 'error', 'Erro ao cadastrar. Tente novamente.');
+                    console.error(erro);
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

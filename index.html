@@ -4,21 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>C.V.D - Controle de Validade Documental</title>
-    <!-- ===== CSS ===== -->
-    <link rel="stylesheet" href="/view/css/conteudoPrincipal.css">
-
-    <!-- ===== Boxicons ===== -->
+    <link rel="stylesheet" href="/frontend/view/css/conteudoPrincipal.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
-
 <body>
 
-    <!-- ===== SIDEBAR ===== -->
     <nav class="sidebar">
         <header>
             <div class="image-text">
                 <span class="image">
-                    <img src="/view/img/logo.png" alt="logo">
+                    <img src="/frontend/assets/img/logo.png" alt="logo">
                 </span>
                 <div class="text header-text">
                     <span class="name">C.V.D</span>
@@ -31,7 +26,6 @@
             <div class="menu">
                 <ul class="menu-links">
                     <h4>Navegação Principal</h4>
-
                     <li class="nav-link">
                         <a href="#" data-tela="dashboard" class="ativo">
                             <i class='bx bx-home-alt icon'></i>
@@ -56,9 +50,7 @@
                             <span class="text nav-text">Alertas</span>
                         </a>
                     </li>
-
                     <h4>Administração</h4>
-
                     <li class="nav-link">
                         <a href="#" data-tela="importar_exportar">
                             <i class='bx bx-import icon'></i>
@@ -71,17 +63,21 @@
                             <span class="text nav-text">Configurações</span>
                         </a>
                     </li>
+                    <li class="nav-link nav-link-sair">
+                        <a href="#" id="btn-sair">
+                            <i class='bx bx-log-out icon'></i>
+                            <span class="text nav-text">Sair</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- ===== TELA CARREGANDO ===== -->
     <main class="conteudo-principal" id="conteudo-principal">
         <div class="loading-tela">Carregando...</div>
     </main>
 
-    <!-- ===== SCRIPTS ===== -->
-    <script src="/controller/conteudo.ctrl.js"></script>
+    <script type="module" src="/frontend/controller/conteudo.ctrl.js"></script>
 </body>
 </html>

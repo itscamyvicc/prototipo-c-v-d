@@ -1,0 +1,304 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+    --body-color: #E4E9F7;
+    --sidebar-color: #003366;
+    --primary-color: #1755a0;
+    --primary-color-light: #F6F5FF;
+    --toggle-color: #DDD;
+    --text-color: #F8F9FA;
+    --secondary-color-light: rgba(132, 139, 200, 0.18);
+
+    /* --- Cores de Notificação --- */
+    --color-danger: #ff7782;
+    --color-sucess: #41f1b6;
+    --color-warning: #ffbb55;
+
+    /* --- Sombra da Caixa --- */
+    --box-shadow: 0 1.2rem 0.7rem var(--secondary-color-light);
+
+    /* --- Animação de Transição --- */
+    --tran-03: all 0.2s ease;
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.4s ease;
+    --tran-05: all 0.5s ease;
+}
+
+.danger  { color: var(--color-danger); }
+.sucess  { color: var(--color-sucess); }
+.warning { color: var(--color-warning); }
+
+/*--------------titulos------------*/
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.titulos h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #003366;
+}
+
+.titulos p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+/********** Badge Pendentes ************/
+.badge-pendentes{
+  background-color: #fee2e2 ;
+  color: #dc2626; 
+  border: 1px solid #dc2626;
+  border-radius: 20px;
+  padding: 6px 16px; 
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ----------- Filtro de Alertas -----------*/
+.filtros-container{
+    background-color: #fff;
+    padding: 16px 20px;
+    border-radius: 6px;
+    box-shadow: var(--box-shadow);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    margin-top: 15px;
+}
+
+.filtro-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filtro-item svg{
+    color: #666;
+    flex-shrink: 0;
+}
+
+.filtro {
+    padding: 8px 12px;
+    border: 1px solid #666;
+    border-radius: 6px;
+    background: #fff;
+    color: #000;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+.filtro:hover {
+    border-color: var(--primary-color);
+}
+
+.filtro:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+/*------- Contagem de Alertas---------*/
+
+.alerta-vazio{
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 40px;
+  text-align: center;
+}
+
+.icone-check{
+    margin-bottom: 24px;
+}
+
+.icone-check svg {
+    color: #2e7d32;
+}
+
+.alerta-vazio h2{
+    font-size: 20px;
+    font-weight: 600;
+    color: #003366;
+    margin-bottom: 8px;
+}
+
+.alerta-vazio p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.alerta-vazio:active {
+    transform: translateY(1);
+}
+/* ----------- Cards de Alerta ----------- */
+.card-alerta {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-alerta.visualizado { opacity: 0.6; }
+
+.alerta-topo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.alerta-icone { font-size: 22px; color: #003366; }
+
+.badge-prioridade {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.badge-prioridade.alta  { background: #fdecea; color: #c0392b; }
+.badge-prioridade.media { background: #fff8e1; color: #f39c12; }
+.badge-prioridade.baixa { background: #e8f5e9; color: #27ae60; }
+
+.badge-novo {
+    background: #1565c0;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+}
+
+.alerta-info { flex: 1; }
+.alerta-doc  { color: #003366; font-size: 13px; font-weight: 600; margin: 2px 0; }
+.alerta-prof { color: #555; font-size: 13px; margin: 2px 0; }
+.alerta-dias { color: #555; font-size: 13px; margin: 2px 0; }
+
+.btn-visualizar {
+    background: #1565c0;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    white-space: nowrap;
+    font-family: 'Poppins', sans-serif;
+}
+.btn-visualizar:hover { background: #003366; }
+/* Ícone do tipo de documento */
+.alerta-icone-doc {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.icone-alta  { background-color: #fdecea; color: #c0392b; }
+.icone-media { background-color: #fef9e7; color: #b7770d; }
+.icone-baixa { background-color: #eaf4fb; color: #1a6fa0; }
+
+/* Layout do card */
+.card-alerta {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+/* Ações no canto direito */
+.alerta-acoes {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* Chip de dias */
+.chip-dias        { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 999px; }
+.chip-dias.alta   { background: #fdecea; color: #c0392b; }
+.chip-dias.media  { background: #fef9e7; color: #b7770d; }
+.chip-dias.baixa  { background: #eaf4fb; color: #1a6fa0; }
+
+/* Seção de prioridade */
+.secao-prioridade { margin: 1rem 0 0.4rem; }
+.secao-label      { font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* Badge visualizado */
+.badge-visto { background: #f0f0f0; color: #888; font-size: 11px; padding: 2px 8px; border-radius: 999px; }
+/* === COLE ISSO NO SEU CSS EXISTENTE === */
+.btn-renovar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    color: #1565c0;
+    border: 1.5px solid #1565c0;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+}
+.btn-renovar:hover {
+    background: #1565c0;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(21, 101, 192, 0.25);
+    transform: translateY(-1px);
+}
+/* === Botão Renovar === */
+.btn-renovar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    color: #1565c0;
+    border: 1.5px solid #1565c0;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.btn-renovar:hover {
+    background: #1565c0;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(21, 101, 192, 0.25);
+    transform: translateY(-1px);
+}
+.btn-renovar:active {
+    transform: translateY(0);
+    box-shadow: none;
+}

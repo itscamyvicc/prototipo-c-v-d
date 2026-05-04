@@ -1,0 +1,47 @@
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central de Alertas</title>
+    <link rel="stylesheet" href="/view/css/alertas.css">
+</head>
+<body>
+    <header>
+        <div class="titulos">
+            <h1>Central de Alertas</h1>
+            <p>Notificações e avisos de vencimentos.</p>
+        </div>
+        <div class="badge-pendentes">0 Pendentes</div>
+    </header>
+
+    <main>
+        <div class="filtros-container">
+            <div class="filtro-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
+                </svg>
+                <select class="filtro" id="filtro-prioridade">
+                    <option value="todas">Todas as prioridades</option>
+                    <option value="alta">Alta</option>
+                    <option value="media">Média</option>
+                    <option value="baixa">Baixa</option>
+                </select>
+            </div>
+
+            <select class="filtro" id="filtro-status">
+                <option value="pendentes">Pendentes</option>
+                <option value="todos">Todos</option>
+                <option value="visualizados">Visualizados</option>
+                <option value="nao_visualizados">Não visualizados</option>
+            </select>
+
+            <div class="filtro-item filtro-busca">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11"/>
+                </svg>
+                <input type="text" id="filtro-busca" class="filtro" placeholder="Buscar profissional..." />
+            </div>
+        </div>
+    </main>
+</body>
+</html>

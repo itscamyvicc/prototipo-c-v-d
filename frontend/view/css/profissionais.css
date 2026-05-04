@@ -2,6 +2,7 @@
 
 :root {
     --body-color: #E4E9F7;
+    --sidebar-color: #003366;
     --primary-color: #124b92;
     --secondary-color-light: rgba(132, 139, 200, 0.18);
     --color-danger: #ff7782;
@@ -21,7 +22,6 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-bottom: 10px;
 }
 
 .page-header-left h1 {
@@ -34,7 +34,7 @@
     font-size: 13px;
     color: #777;
     margin-top: 2px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .btn-novo {
@@ -51,14 +51,10 @@
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
-.btn-novo:hover {
-    background-color: #003366;
-}
-
-/* -------------- Tabela de Cadastro -------------- */
+/* -------------- Cadastro de Profissional -------------- */
 .tabela_primaria {
     width: 100%;
     background-color: #fff;
@@ -72,7 +68,7 @@
     font-size: 20px;
     font-weight: 600;
     color: #003366;
-    margin-bottom: 35px;
+    margin-bottom: 20px;
 }
 
 .header-container {
@@ -91,11 +87,19 @@
 /* -------------- Formulário -------------- */
 .tabela_primaria form {
     position: relative;
-    background-color: #fff;
+    margin-top: 16px;
+    background-color: #FFF;
 }
 
 .tabela_primaria form .details {
-    margin-top: 10px;
+    margin-top: 30px;
+}
+
+.tabela_primaria form .title {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 6px 0;
+    color: #333;
 }
 
 .tabela_primaria form .fields {
@@ -103,10 +107,6 @@
     align-items: center;
     grid-template-columns: repeat(2, 1fr);
     gap: 0 20px;
-}
-
-.input-field.full-width {
-    grid-column: 1 / -1;
 }
 
 form .fields .input-field {
@@ -120,7 +120,6 @@ form .fields .input-field {
     font-weight: 700;
     color: #003366;
 }
-
 
 .input-field input,
 .input-field select {
@@ -177,7 +176,7 @@ form .fields .input-field {
     margin: 25px 0;
 }
 
-/* -------------- Lista de Documentos -------------- */
+/* -------------- Lista de Profissionais -------------- */
 .lista-profissionais {
     width: 100%;
 }
@@ -213,13 +212,14 @@ form .fields .input-field {
     border: none;
     outline: none;
     flex: 1;
+    padding: 5px;
 }
 
 .filtro select {
     height: 40px;
     border-radius: 8px;
     border: 1px solid #aaa;
-    padding: 0 10px;
+    padding: 0 15px;
     background: #fff;
 }
 
@@ -235,25 +235,23 @@ form .fields .input-field {
     margin-bottom: 15px;
 }
 
+.card-profissional .info h3 {
+    font-weight: 550;
+    color: #003366;
+
+}
+
 .avatar {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     background: #0d47a1;
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    font-size: 20px;
-    flex-shrink: 0;
-}
-
-.avatar-doc {
-    background: #fff7e6;
-    color: #e6a817;
-    border: 1px solid #f0d080;
-    font-size: 24px;
+    font-weight: 500;
+    font-size: 30px;
 }
 
 .top-info {
@@ -291,3 +289,84 @@ form .fields .input-field {
 }
 
 .info { flex: 1; }
+/* ===== CORREÇÕES ===== */
+
+/* Esconde o form por padrão, mostra só quando .ativo */
+.tabela_primaria {
+    display: none;
+}
+.tabela_primaria.ativo {
+    display: block;
+}
+
+/* Badges de status que faltavam */
+.badge.inativo    { background: #f0f0f0; color: #888; }
+.badge.afastado   { background: #fde8e8; color: #c0392b; }
+.badge.ferias     { background: #fff3cd; color: #b78103; }
+.badge.licenca    { background: #fde8e8; color: #c0392b; }
+.badge.desligado  { background: #f0f0f0; color: #555; }
+.tabela_primaria { display: none; }
+.tabela_primaria.ativo { display: block; }
+
+.badge.inativo   { background: #f0f0f0; color: #888; }
+.badge.afastado  { background: #fde8e8; color: #c0392b; }
+.badge.ferias    { background: #fff3cd; color: #b78103; }
+.badge.licenca   { background: #fde8e8; color: #c0392b; }
+.badge.desligado { background: #f0f0f0; color: #555; }
+
+.input-field input:invalid,
+.input-field select:invalid {
+    border-color: #aaa;
+}
+#popup-sucesso {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+#popup-sucesso.ativo { display: flex; }
+
+.popup-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 40px 48px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    max-width: 360px;
+    width: 90%;
+    animation: popupEntrar 0.25s ease;
+}
+
+.popup-icone {
+    width: 64px; height: 64px;
+    background: #dcfce7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 2rem;
+    color: #1b8a5a;
+}
+
+#popup-titulo { font-size: 1.1rem; font-weight: 700; color: #003366; margin-bottom: 8px; }
+#popup-mensagem { font-size: 0.875rem; color: #64748b; margin-bottom: 24px; }
+
+#popup-fechar {
+    background: linear-gradient(to right, #015cb9, #013973);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 32px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+@keyframes popupEntrar {
+    from { transform: scale(0.85); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}

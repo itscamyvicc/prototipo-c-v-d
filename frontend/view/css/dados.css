@@ -207,3 +207,14 @@ header {
     margin-top: auto;
 
   }
+ #mensagemImport,
+#mensagemExport {
+    display: none;
+}
+
+#mensagemImport.sucesso,
+#mensagemImport.erro,
+#mensagemExport.sucesso,
+#mensagemExport.erro {
+    display: block;
+}
