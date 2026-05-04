@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profissionais</title>
-
-    <!-- CSS -->
     <link rel="stylesheet" href="/view/css/profissionais.css">
-
-    <!-- BOXICONS -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
@@ -54,13 +50,13 @@
                 </div>
 
                 <div class="input-field">
-                    <label>Setor</label>
-                    <input type="text" placeholder="Ex: UTI, Pediatria">
+                    <label>Setor <span class="obrigatorio">*</span></label>
+                    <input type="text" placeholder="Ex: UTI, Pediatria" required>
                 </div>
 
                 <div class="input-field">
-                    <label>E-mail</label>
-                    <input type="text" placeholder="seuemail@gmail.com">
+                    <label>E-mail <span class="obrigatorio">*</span></label>
+                    <input type="email" placeholder="seuemail@gmail.com" required>
                 </div>
 
                 <div class="input-field">
@@ -72,8 +68,8 @@
 
                 <div class="input-field">
                     <label>Data de Admissão</label>
-                    <input type="date" id="dataAdmissao" 
-                        min="2000-01-01" 
+                    <input type="date" id="dataAdmissao"
+                        min="2000-01-01"
                         max="2026-12-31">
                 </div>
 
@@ -92,13 +88,12 @@
             </div>
 
             <div class="form-actions">
-                <button class="button btn-cancelar" type="reset">Cancelar</button>
+                <button class="button btn-cancelar" type="button">Cancelar</button>
                 <button class="button btn-cadastrar" type="submit">Cadastrar</button>
             </div>
         </div>
     </form>
 </div>
-<!-- ===== FIM FORM ===== -->
 
 <!-- ===== POPUP SUCESSO ===== -->
 <div id="popup-sucesso">
@@ -109,7 +104,6 @@
         <button id="popup-fechar">OK</button>
     </div>
 </div>
-<!-- ===== FIM POPUP ===== -->
 
 <!-- ===== LISTA ===== -->
 <section class="lista-profissionais">
@@ -122,20 +116,14 @@
             </div>
 
             <div class="filtro">
-                <select>
-                    <option value="">Todos os Cargos</option>
-                    <option value="méd">Médico / Médica</option>
-                    <option value="enferm">Enfermeiro / Enfermeira</option>
-                    <option value="recepcion">Recepcionista</option>
+                <select id="filtro-cargo">
+                    <option value="">Todos os Profissionais</option>
                 </select>
             </div>
         </div>
 
-        <!-- CARDS SERÃO INSERIDOS VIA JS -->
-
     </div>
 </section>
-<!-- ===== FIM LISTA ===== -->
 
 </body>
 </html>

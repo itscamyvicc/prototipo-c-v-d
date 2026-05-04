@@ -16,6 +16,7 @@ export async function init() {
     if (!document.querySelector(".lista-profissionais")) return;
 
     await carregarProfissionais();
+    await preencherFiltroCargos();
     configurarFormulario();
     configurarBusca();
     configurarFiltro();
@@ -39,7 +40,6 @@ function mostrarPopup(titulo, mensagem) {
 
 function fecharFormulario() {
     document.querySelector(".tabela_primaria")?.classList.remove("ativo");
-
     const titulo = document.querySelector(".tabela_primaria header");
     const btnCadastrar = document.querySelector(".btn-cadastrar");
     if (titulo) titulo.textContent = "Novo Profissional";
@@ -50,6 +50,7 @@ function fecharFormulario() {
 }
 
 function capitalizar(str) {
+    if (!str) return "—";
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
@@ -89,7 +90,7 @@ async function carregarProfissionais(filtroNome = "", filtroCargo = "") {
 
         if (filtroCargo) {
             profissionais = profissionais.filter(p =>
-                p.cargo?.trim().toLowerCase().includes(filtroCargo.trim().toLowerCase())
+                p.cargo?.trim().toLowerCase() === filtroCargo.trim().toLowerCase()
             );
         }
 
@@ -123,12 +124,41 @@ async function carregarProfissionais(filtroNome = "", filtroCargo = "") {
 }
 
 // ============================================================
+// FILTRO DE CARGOS — carrega do Firebase
+// ============================================================
+
+async function preencherFiltroCargos() {
+    const select = document.getElementById("filtro-cargo");
+    if (!select) return;
+
+    while (select.options.length > 1) select.remove(1);
+
+    try {
+        const snap = await getDocs(collection(db, "profissionais"));
+        const cargos = new Set();
+        snap.docs.forEach(d => {
+            const cargo = d.data().cargo?.trim();
+            if (cargo) cargos.add(cargo);
+        });
+
+        cargos.forEach(cargo => {
+            const option = document.createElement("option");
+            option.value = cargo;
+            option.textContent = cargo;
+            select.appendChild(option);
+        });
+    } catch (erro) {
+        console.error("Erro ao carregar cargos:", erro);
+    }
+}
+
+// ============================================================
 // CARD
 // ============================================================
 
 function criarCard(prof) {
     const inicial = (prof.nome ?? "?")[0].toUpperCase();
-    const status = prof.status ?? "ativo";
+    const status = prof.status?.toLowerCase() ?? "ativo";
 
     const div = document.createElement("div");
     div.className = "card-profissional";
@@ -140,7 +170,7 @@ function criarCard(prof) {
                 <i class='bx bx-edit edit-icon'></i>
             </div>
             <div class="badges">
-                <span class="badge ${status.toLowerCase()}">${capitalizar(status)}</span>
+                <span class="badge ${status}">${capitalizar(status)}</span>
                 ${prof.cargo ? `<span class="badge cargo">${prof.cargo}</span>` : ""}
                 ${prof.setor ? `<span class="badge setor">${prof.setor}</span>` : ""}
             </div>
@@ -150,7 +180,6 @@ function criarCard(prof) {
     `;
 
     div.querySelector(".edit-icon").addEventListener("click", () => abrirEdicao(prof));
-
     return div;
 }
 
@@ -233,6 +262,7 @@ function configurarFormulario() {
                 novoForm.reset();
                 fecharFormulario();
                 await carregarProfissionais();
+                await preencherFiltroCargos();
                 mostrarPopup("Profissional atualizado!", "As informações foram salvas com sucesso.");
             } else {
                 dados.criadoEm = serverTimestamp();
@@ -240,6 +270,7 @@ function configurarFormulario() {
                 novoForm.reset();
                 fecharFormulario();
                 await carregarProfissionais();
+                await preencherFiltroCargos();
                 mostrarPopup("Profissional cadastrado!", "O profissional foi adicionado com sucesso.");
             }
 
@@ -292,7 +323,7 @@ function configurarBusca() {
     input.addEventListener("input", () => {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
-            const filtroSelect = document.querySelector(".filtro select");
+            const filtroSelect = document.getElementById("filtro-cargo");
             carregarProfissionais(input.value, filtroSelect?.value ?? "");
         }, 400);
     });
@@ -303,7 +334,7 @@ function configurarBusca() {
 // ============================================================
 
 function configurarFiltro() {
-    const select = document.querySelector(".filtro select");
+    const select = document.getElementById("filtro-cargo");
     if (!select) return;
 
     select.addEventListener("change", () => {
@@ -317,8 +348,8 @@ function configurarFiltro() {
 // ============================================================
 
 function configurarBtnNovo() {
-    const btnNovo    = document.querySelector(".btn-novo");
-    const closeIcon  = document.querySelector(".close-icon");
+    const btnNovo     = document.querySelector(".btn-novo");
+    const closeIcon   = document.querySelector(".close-icon");
     const btnCancelar = document.querySelector(".btn-cancelar");
 
     btnNovo?.addEventListener("click", () => {
@@ -330,13 +361,11 @@ function configurarBtnNovo() {
         fecharFormulario();
     });
 
-    btnCancelar?.addEventListener("click", (e) => {
-        e.preventDefault();
+    // Cancelar apenas limpa os campos, não fecha
+    btnCancelar?.addEventListener("click", () => {
         document.getElementById("formInfo")?.reset();
-        fecharFormulario();
     });
 
-    // Fechar popup
     document.getElementById("popup-fechar")?.addEventListener("click", () => {
         document.getElementById("popup-sucesso").classList.remove("ativo");
     });

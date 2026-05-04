@@ -250,12 +250,11 @@ form .fields .input-field {
 }
 
 .avatar-doc {
-    background: #fff7e6;
-    color: #e6a817;
-    border: 1px solid #f0d080;
+    background: #ffffff;
+    color: #003366;
+    border: 1px solid #003366;
     font-size: 24px;
 }
-
 .top-info {
     display: flex;
     justify-content: space-between;
@@ -353,3 +352,7 @@ form .fields .input-field {
 
 /* -------------- Alias lista-documentos -------------- */
 .lista-documentos { width: 100%; }
+.card-profissional .info h3 {
+    font-weight: 600;
+    color: #003366;
+}

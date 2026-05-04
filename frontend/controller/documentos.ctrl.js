@@ -10,6 +10,13 @@ import {
 
 export async function init() {
     if (!document.querySelector(".conteudo-lista")) return;
+      // ← Adiciona aqui:
+    const params = new URLSearchParams(window.location.search);
+    const profFiltro = params.get("profissional");
+    if (profFiltro) {
+        const input = document.querySelector(".busca input");
+        if (input) input.value = profFiltro;
+    }
     await carregarDocumentos();
     await preencherSelectProfissionais();
     configurarFormulario();
@@ -39,6 +46,41 @@ async function getDiasAlerta() {
         const snap = await getDoc(doc(db, "configuracoes", "sistema"));
         return snap.exists() ? (snap.data().diasAntecedencia ?? 30) : 30;
     } catch { return 30; }
+}
+
+// ── Alerta automático ────────────────────────────────────────
+
+async function criarOuAtualizarAlerta(dados, docId = null) {
+    // Só cria alerta se tiver data de validade
+    if (!dados.dataValidade) return;
+
+    try {
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        const validade = new Date(dados.dataValidade);
+        validade.setHours(0, 0, 0, 0);
+        const diasParaVencer = Math.ceil((validade - hoje) / (1000 * 60 * 60 * 24));
+
+        const profRef = doc(db, "profissionais", dados.profissionalId);
+
+        const dadosAlerta = {
+            tipo:            dados.tipoDocumento,
+            tipoDocumento:   dados.tipoDocumento,
+            numeroRegistro:  dados.numeroDocumento ?? "",
+            id_profissional: profRef,
+            dataVencimento:  validade,
+            diasParaVencer:  diasParaVencer,
+            visualizado:     false,
+            status:          "pendente",
+            dataEnvio:       serverTimestamp(),
+            criadoEm:        serverTimestamp(),
+            ...(docId ? { documentoId: docId } : {})
+        };
+
+        await addDoc(collection(db, "alertas"), dadosAlerta);
+    } catch (erro) {
+        console.error("Erro ao criar alerta:", erro);
+    }
 }
 
 // ── Listagem ─────────────────────────────────────────────────
@@ -231,12 +273,14 @@ function configurarFormulario() {
         try {
             if (editandoId) {
                 await updateDoc(doc(db, "documentos", editandoId), dados);
+                await criarOuAtualizarAlerta(dados, editandoId); // ← alerta ao editar
                 novoForm.reset(); fecharFormulario();
                 await preencherSelectProfissionais(); await carregarDocumentos();
                 mostrarPopup("Documento atualizado!", "As alterações foram salvas com sucesso.");
             } else {
                 dados.criadoEm = serverTimestamp();
-                await addDoc(collection(db, "documentos"), dados);
+                const docRef = await addDoc(collection(db, "documentos"), dados);
+                await criarOuAtualizarAlerta(dados, docRef.id); // ← alerta ao cadastrar
                 novoForm.reset(); fecharFormulario();
                 await preencherSelectProfissionais(); await carregarDocumentos();
                 mostrarPopup("Documento cadastrado!", "O documento foi adicionado com sucesso.");
@@ -288,10 +332,10 @@ function configurarBtnNovo() {
     });
 
     document.querySelector(".btn-cancelar")?.addEventListener("click", (e) => {
-        e.preventDefault();
-        document.getElementById("formInfo")?.reset();
-        fecharFormulario();
-    });
+    e.preventDefault();
+    document.getElementById("formInfo")?.reset();
+    // sem fecharFormulario() — só limpa os campos
+});
 
     document.getElementById("popup-fechar")?.addEventListener("click", () => {
         document.getElementById("popup-sucesso")?.classList.remove("ativo");

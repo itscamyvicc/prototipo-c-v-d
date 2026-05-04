@@ -140,7 +140,7 @@ export async function init() {
 
     // Exportar
   btnExportar?.addEventListener("click", async () => {
-    setMensagem(msgExport, "Gerando arquivo...", null);
+    setMensagem(msgExport, "Gerando arquivo...", "sucesso");
     btnExportar.disabled = true;
     btnExportar.textContent = "Gerando...";
 

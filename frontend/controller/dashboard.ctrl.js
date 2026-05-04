@@ -52,7 +52,12 @@ export async function iniciarDashboard() {
 
         renderizarVencendo(vencendo);
 
-        const urgentes = alertas.filter(a => a.visualizado === false);
+        const urgentes = alertas.filter(a => {
+    if (a.visualizado !== false) return false;
+    const venc = a.dataVencimento?.toDate ? a.dataVencimento.toDate() : new Date(a.dataVencimento ?? null);
+    const dias = Math.ceil((venc - hoje) / (1000 * 60 * 60 * 24));
+    return dias <= 7;
+});
         renderizarAlertas(urgentes);
 
         atualizarGraficos(documentos, profissionais);

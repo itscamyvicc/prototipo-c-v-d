@@ -314,8 +314,9 @@ form .fields .input-field {
 .badge.licenca   { background: #fde8e8; color: #c0392b; }
 .badge.desligado { background: #f0f0f0; color: #555; }
 
-.input-field input:invalid {
-    border-color: #ff7782;
+.input-field input:invalid,
+.input-field select:invalid {
+    border-color: #aaa;
 }
 #popup-sucesso {
     display: none;

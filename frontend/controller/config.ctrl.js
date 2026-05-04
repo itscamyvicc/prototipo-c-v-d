@@ -1,7 +1,3 @@
-// ============================================================
-// controller/config.ctrl.js — VERSÃO COMPLETA
-// ============================================================
-
 import { db } from "/firebase/firebase-config.js";
 import { doc, getDoc, setDoc }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -14,9 +10,6 @@ export async function init() {
     configurarBtnSalvar();
 }
 
-// ============================================================
-// CARREGAR
-// ============================================================
 async function carregarConfiguracoes() {
     try {
         const snap = await getDoc(CONFIG_DOC);
@@ -24,36 +17,28 @@ async function carregarConfiguracoes() {
 
         const c = snap.data();
 
-        setValue("dias-antecedencia",   c.diasAntecedencia);
-        setCheck("email-alertas",       c.emailAtivo);
-        setValue("frequencia-email",    c.emailFrequencia);
-        setCheck("whatsapp-alertas",    c.whatsappAtivo);
-        setValue("numero-whatsapp",     c.whatsappNumero);
-        setValue("frequencia-whatsapp", c.whatsappFrequencia);
+        setValue("dias-antecedencia", c.diasAntecedencia);
+        setCheck("email-alertas",     c.emailAtivo);
+        setValue("frequencia-email",  c.emailFrequencia);
+        setCheck("whatsapp-alertas",  c.whatsappAtivo);
 
-        // Aplica estado inicial dos toggles
-        toggleCampos("email-alertas",    ["frequencia-email"]);
-        toggleCampos("whatsapp-alertas", ["numero-whatsapp", "frequencia-whatsapp"]);
+        toggleCampos("email-alertas", ["frequencia-email"]);
 
     } catch (erro) {
         console.error("Erro ao carregar configurações:", erro);
     }
 }
 
-// ============================================================
-// TOGGLES — desabilita campos quando checkbox está desmarcado
-// ============================================================
 function configurarTogglesDependentes() {
     const pares = [
-        { check: "email-alertas",    deps: ["frequencia-email"] },
-        { check: "whatsapp-alertas", deps: ["numero-whatsapp", "frequencia-whatsapp"] },
+        { check: "email-alertas", deps: ["frequencia-email"] },
     ];
 
     pares.forEach(({ check, deps }) => {
         const el = document.getElementById(check);
         if (!el) return;
         el.addEventListener("change", () => toggleCampos(check, deps));
-        toggleCampos(check, deps); // estado inicial
+        toggleCampos(check, deps);
     });
 }
 
@@ -67,9 +52,6 @@ function toggleCampos(checkId, depIds) {
     });
 }
 
-// ============================================================
-// SALVAR
-// ============================================================
 function configurarBtnSalvar() {
     const btn = document.getElementById("btn-salvar");
     if (!btn) return;
@@ -83,26 +65,17 @@ function configurarBtnSalvar() {
         }
         document.getElementById("dias-antecedencia").style.borderColor = "";
 
-        // Validação: se WhatsApp ativo, número é obrigatório
         const whatsAtivo = document.getElementById("whatsapp-alertas")?.checked;
-        const numero = document.getElementById("numero-whatsapp")?.value?.trim();
-        if (whatsAtivo && !numero) {
-            document.getElementById("numero-whatsapp").style.borderColor = "red";
-            return;
-        }
-        document.getElementById("numero-whatsapp").style.borderColor = "";
 
         btn.disabled = true;
         btn.textContent = "Salvando...";
 
         try {
             await setDoc(CONFIG_DOC, {
-                diasAntecedencia:   dias,
-                emailAtivo:         document.getElementById("email-alertas")?.checked ?? false,
-                emailFrequencia:    document.getElementById("frequencia-email")?.value,
-                whatsappAtivo:      whatsAtivo ?? false,
-                whatsappNumero:     numero,
-                whatsappFrequencia: document.getElementById("frequencia-whatsapp")?.value,
+                diasAntecedencia: dias,
+                emailAtivo:       document.getElementById("email-alertas")?.checked ?? false,
+                emailFrequencia:  document.getElementById("frequencia-email")?.value,
+                whatsappAtivo:    whatsAtivo ?? false,
             }, { merge: true });
 
             btn.textContent = "✓ Salvo!";
@@ -119,9 +92,6 @@ function configurarBtnSalvar() {
     });
 }
 
-// ============================================================
-// HELPERS
-// ============================================================
 function setValue(id, val) {
     const el = document.getElementById(id);
     if (el && val !== undefined) el.value = val;
