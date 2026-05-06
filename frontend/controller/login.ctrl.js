@@ -55,3 +55,20 @@ function traduzirErro(codigo) {
     };
     return erros[codigo] ?? "Erro ao fazer login. Tente novamente.";
 }
+document.getElementById('link-cadastro')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    if (!document.getElementById('css-login')) {
+        const linkCSS = document.createElement('link');
+        linkCSS.rel = 'stylesheet';
+        linkCSS.href = '/frontend/view/css/login_cadastro.css';
+        linkCSS.id = 'css-login';
+        document.head.appendChild(linkCSS);
+    }
+
+    const resposta = await fetch('/frontend/view/cadastro.html');
+    const html = await resposta.text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    document.getElementById('conteudo-principal').innerHTML = doc.body.innerHTML;
+    import(`/frontend/controller/cadastro.ctrl.js?t=${Date.now()}`).catch(console.error);
+});
