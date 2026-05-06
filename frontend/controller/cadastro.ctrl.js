@@ -29,3 +29,11 @@ async function doRegister() {
         }
     }
 }
+document.getElementById('btn-voltar')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const resposta = await fetch('/frontend/view/login.html');
+    const html = await resposta.text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    document.getElementById('conteudo-principal').innerHTML = doc.body.innerHTML;
+    import(`/frontend/controller/login.ctrl.js?t=${Date.now()}`).catch(console.error);
+});

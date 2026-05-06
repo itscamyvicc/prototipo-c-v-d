@@ -10,7 +10,6 @@ import {
 
 export async function init() {
     if (!document.querySelector(".conteudo-lista")) return;
-      // ← Adiciona aqui:
     const params = new URLSearchParams(window.location.search);
     const profFiltro = params.get("profissional");
     if (profFiltro) {
@@ -19,12 +18,12 @@ export async function init() {
     }
     await carregarDocumentos();
     await preencherSelectProfissionais();
+    await preencherFiltroTipos(); // ← só isso
     configurarFormulario();
     configurarBusca();
     configurarFiltro();
     configurarBtnNovo();
 }
-
 // ── Helpers ──────────────────────────────────────────────────
 
 function fecharFormulario() {
@@ -317,6 +316,25 @@ function configurarFiltro() {
     select.addEventListener("change", () => {
         carregarDocumentos(document.querySelector(".busca input")?.value ?? "", select.value);
     });
+}
+async function preencherFiltroTipos() {
+    const select = document.querySelector(".filtro select");
+    if (!select) return;
+
+    try {
+        const snap = await getDocs(collection(db, "documentos"));
+        const tipos = [...new Set(snap.docs.map(d => d.data().tipoDocumento).filter(Boolean))].sort();
+
+        select.innerHTML = `<option value="">Todos os Tipos</option>`;
+        tipos.forEach(tipo => {
+            const option = document.createElement("option");
+            option.value = tipo;
+            option.textContent = tipo;
+            select.appendChild(option);
+        });
+    } catch (erro) {
+        console.error("Erro ao carregar tipos:", erro);
+    }
 }
 
 // ── Modal / Popup ────────────────────────────────────────────

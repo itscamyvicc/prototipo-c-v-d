@@ -14,29 +14,21 @@
     --text-color: #F8F9FA;
     --box-shadow: 0 2rem 3rem var(--secondary-color-light);
 
-    /* --- Cores de Notificação --- */
     --color-danger: #ff7782;
     --color-sucess: #41f1b6;
     --color-warning: #ffbb55;
 }
 
-.danger {
-    color: var(--color-danger);
-}
-
-.sucess {
-    color: var(--color-sucess);
-}
-
-.warning {
-    color: var(--color-warning);
-}
+.danger { color: var(--color-danger); }
+.sucess { color: var(--color-sucess); }
+.warning { color: var(--color-warning); }
 
 body {
     min-height: 100vh;
     overflow-x: hidden;
     background: #f2f2f2;
 }
+
 /********** Container Principal ***********/
 
 .container {
@@ -177,9 +169,9 @@ body {
 
 .divider::before,
 .divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
+    content: '';
+    flex: 1;
+    height: 1px;
 }
 
 .divider span {
@@ -242,7 +234,6 @@ form {
     font-size: 17px;
     font-weight: 600;
     color: #003366;
-    margin-top: px;
 }
 
 .link-cadastro a {
@@ -257,8 +248,83 @@ form {
 
 /********* Responsivo *********/
 
+@media (max-width: 1200px) {
+    .logo-container {
+        column-gap: 20px;
+    }
+
+    .logo-container h1 {
+        font-size: 40px;
+    }
+
+    .logo-container p {
+        font-size: 16px;
+    }
+
+    .logo img {
+        width: 80px;
+        height: 80px;
+    }
+}
+
 @media (max-width: 968px) {
     .container {
         grid-template-columns: 1fr;
     }
-} 
+
+    .lado-esquerdo {
+        position: relative;
+        height: auto;
+        padding: 32px 24px;
+    }
+
+    .logo-container {
+        column-gap: 20px;
+    }
+
+    .logo-container h1 {
+        font-size: 36px;
+    }
+
+    .logo-container p {
+        font-size: 15px;
+    }
+
+    .logo img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .lado-direito {
+        padding: 24px 16px;
+        align-items: flex-start;
+    }
+
+    .form-container {
+        padding: 24px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-container h1 {
+        font-size: 28px;
+    }
+
+    .logo-container p {
+        font-size: 13px;
+    }
+
+    .logo img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .input-group input {
+        font-size: 16px;
+    }
+
+    .btn-google,
+    .btn-primary {
+        font-size: 14px;
+    }
+}
