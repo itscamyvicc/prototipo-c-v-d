@@ -224,3 +224,20 @@
     height: 320px !important;
     max-height: 220px;
 }
+.item-icon-red {
+    color: #ff7782;
+}
+
+.badge-red {
+    background-color: #fff0f1;
+    color: #ff7782;
+}
+/* Adiciona no final do dashboard.css */
+.item-alerta {
+    background: #fff0f1;
+    border-color: #ffb3b8;
+}
+
+.item-alerta .item-vencendo-icon {
+    color: #ff7782;
+}

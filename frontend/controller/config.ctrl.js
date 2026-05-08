@@ -1,3 +1,5 @@
+// controller/config.ctrl.js
+
 import { db } from "/firebase/firebase-config.js";
 import { doc, getDoc, setDoc }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -17,12 +19,15 @@ async function carregarConfiguracoes() {
 
         const c = snap.data();
 
-        setValue("dias-antecedencia", c.diasAntecedencia);
-        setCheck("email-alertas",     c.emailAtivo);
-        setValue("frequencia-email",  c.emailFrequencia);
-        setCheck("whatsapp-alertas",  c.whatsappAtivo);
+        setValue("dias-antecedencia",   c.diasAntecedencia);
+        setCheck("email-alertas",       c.emailAtivo);
+        setValue("frequencia-email",    c.emailFrequencia);
+        setCheck("whatsapp-alertas",    c.whatsappAtivo);
+        setValue("frequencia-whatsapp", c.whatsappFrequencia);
 
-        toggleCampos("email-alertas", ["frequencia-email"]);
+        // Aplica estado inicial dos dependentes
+        toggleCampos("email-alertas",    ["frequencia-email"]);
+        toggleCampos("whatsapp-alertas", ["frequencia-whatsapp"]);
 
     } catch (erro) {
         console.error("Erro ao carregar configurações:", erro);
@@ -31,7 +36,8 @@ async function carregarConfiguracoes() {
 
 function configurarTogglesDependentes() {
     const pares = [
-        { check: "email-alertas", deps: ["frequencia-email"] },
+        { check: "email-alertas",    deps: ["frequencia-email"]    },
+        { check: "whatsapp-alertas", deps: ["frequencia-whatsapp"] },
     ];
 
     pares.forEach(({ check, deps }) => {
@@ -65,17 +71,16 @@ function configurarBtnSalvar() {
         }
         document.getElementById("dias-antecedencia").style.borderColor = "";
 
-        const whatsAtivo = document.getElementById("whatsapp-alertas")?.checked;
-
         btn.disabled = true;
         btn.textContent = "Salvando...";
 
         try {
             await setDoc(CONFIG_DOC, {
-                diasAntecedencia: dias,
-                emailAtivo:       document.getElementById("email-alertas")?.checked ?? false,
-                emailFrequencia:  document.getElementById("frequencia-email")?.value,
-                whatsappAtivo:    whatsAtivo ?? false,
+                diasAntecedencia:    dias,
+                emailAtivo:          document.getElementById("email-alertas")?.checked    ?? false,
+                emailFrequencia:     document.getElementById("frequencia-email")?.value   ?? "Diária",
+                whatsappAtivo:       document.getElementById("whatsapp-alertas")?.checked ?? false,
+                whatsappFrequencia:  document.getElementById("frequencia-whatsapp")?.value ?? "Diária",
             }, { merge: true });
 
             btn.textContent = "✓ Salvo!";
@@ -87,7 +92,10 @@ function configurarBtnSalvar() {
         } catch (erro) {
             console.error("Erro ao salvar:", erro);
             btn.textContent = "Erro ao salvar";
-            btn.disabled = false;
+            setTimeout(() => {
+                btn.textContent = "Salvar Configurações";
+                btn.disabled = false;
+            }, 2000);
         }
     });
 }

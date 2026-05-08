@@ -302,3 +302,13 @@ header {
     transform: translateY(0);
     box-shadow: none;
 }
+.alerta-icone-doc {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 22px; /* ← aumenta o ícone */
+}

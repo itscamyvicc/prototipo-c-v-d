@@ -9,38 +9,40 @@
 </head>
 
 <body>
-    <header><!--Início Cabeçalho-->
+    <header>
         <div class="titulos">
             <h1>Configurações do Sistema</h1>
             <span>Personalize o sistema conforme suas necessidades</span>
         </div>
-    </header><!-- Fim Cabeçalho -->
+    </header>
 
-    <main> <!-- Início Conteúdo -->
-        <div class="card"><!-- Início Card -->
+    <main>
+
+        <!-- Card: Alertas gerais -->
+        <div class="card">
             <div class="card-header">
                 <i class='bx bx-bell'></i>
                 <h3>Alertas e Notificações</h3>
             </div>
             <div class="campo">
-                <label for="dias-antecedencia">Dias de Antecedência para Alertas(Padrão)</label>
+                <label for="dias-antecedencia">Dias de Antecedência para Alertas (Padrão)</label>
                 <input type="number" id="dias-antecedencia" value="30">
                 <p class="descricao">Quantos dias antes do vencimento o sistema deve gerar alertas</p>
             </div>
-        </div><!-- Fim Card -->
+        </div>
 
-        <div class="card"><!-- Início Card -->
+        <!-- Card: Email -->
+        <div class="card">
             <div class="card-header">
-                <i class='bx bx-envelope' ></i>
+                <i class='bx bx-envelope'></i>
                 <h3>Notificações por Email</h3>
             </div>
 
             <div class="campo checkbox-field">
                 <div class="checkbox-wrapper">
                     <div class="checkbox-label">
-                        <label for="email-alertas">Dias de Antecedência para Alertas (Padrão)</label>
-                        <p class="descricao">Enviar alertas por email quando documentos estiverem próximos do vencimento
-                        </p>
+                        <label for="email-alertas">Ativar alertas por Email</label>
+                        <p class="descricao">Enviar alertas por email quando documentos estiverem próximos do vencimento</p>
                     </div>
                     <input type="checkbox" id="email-alertas">
                 </div>
@@ -54,61 +56,40 @@
                     <option>Mensal</option>
                 </select>
             </div>
-        </div><!-- Fim Card -->
+        </div>
 
-
-        <div class="card"><!-- Início Card -->
+        <!-- Card: WhatsApp -->
+        <div class="card">
             <div class="card-header">
-                <i class='bx bxl-whatsapp whats-icon' ></i>
+                <i class='bx bxl-whatsapp whats-icon'></i>
                 <h3>Notificações por WhatsApp</h3>
             </div>
 
             <div class="campo checkbox-field">
                 <div class="checkbox-wrapper">
                     <div class="checkbox-label">
-                        <label for="whatsapp-alertas">Receber notificações no WhatsApp</label>
-                        <p class="descricao">Enviar alertas por WhatsApp quando documentos estiverem próximos do
-                            vencimento</p>
+                        <label for="whatsapp-alertas">Ativar alertas por WhatsApp</label>
+                        <p class="descricao">Enviar alertas por WhatsApp quando documentos estiverem próximos do vencimento</p>
                     </div>
                     <input type="checkbox" id="whatsapp-alertas">
                 </div>
-            </div><!-- Fim Card -->
+            </div>
 
-           <!-- REMOVE: -->
-
-
-<div class="campo">
-    <label for="email-alertas">Receber alertas por whatsapp</label>
-    <select id="frequencia-whatsapp">
-        <option>Diária</option>
-        <option>Semanal</option>
-        <option>Mensal</option>
-    </select>
-</div>
+            <div class="campo">
+                <label for="frequencia-whatsapp">Frequência de WhatsApp</label>
+                <select id="frequencia-whatsapp">
+                    <option>Diária</option>
+                    <option>Semanal</option>
+                    <option>Mensal</option>
+                </select>
+            </div>
+        </div>
 
         <div class="button-container">
             <button id="btn-salvar">Salvar Configurações</button>
         </div>
 
-    </main> <!--Fim Conteúdo-->
-
-    <script>
-      document.getElementById('btn-salvar').addEventListener('click', function() {
-    const btn = document.getElementById('btn-salvar');
-
-    // Feedback visual
-    btn.textContent = '✓ Salvo!';
-    btn.classList.add('salvo');
-    btn.disabled = true;
-
-    setTimeout(() => {
-        btn.textContent = 'Salvar Configurações';
-        btn.classList.remove('salvo');
-        btn.disabled = false;
-    }, 2000);
-});
-    </script>
-
+    </main>
 </body>
 
 </html>
