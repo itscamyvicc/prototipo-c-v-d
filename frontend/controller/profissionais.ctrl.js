@@ -189,18 +189,19 @@ function criarCard(prof) {
 
 function abrirEdicao(prof) {
     const form = document.getElementById("formInfo");
-    const campos = form.querySelectorAll("input, select");
     const titulo = document.querySelector(".tabela_primaria header");
     const btnCadastrar = form.querySelector(".btn-cadastrar");
+    if (!form) return;
 
-    campos[0].value = prof.nome         ?? "";
-    campos[1].value = prof.cpf          ?? "";
-    campos[2].value = prof.cargo        ?? "";
-    campos[3].value = prof.setor        ?? "";
-    campos[4].value = prof.email        ?? "";
-    campos[5].value = prof.telefone     ?? "";
-    campos[6].value = prof.dataAdmissao ?? "";
-    campos[7].value = prof.status       ?? "";
+    const setVal = (id, val) => { const el = form.querySelector(`#${id}`); if (el) el.value = val ?? ""; };
+    setVal("nome", prof.nome ?? "");
+    setVal("cpf", prof.cpf ?? "");
+    setVal("cargo", prof.cargo ?? "");
+    setVal("setor", prof.setor ?? "");
+    setVal("email", prof.email ?? "");
+    setVal("telefone", prof.telefone ?? "");
+    setVal("dataAdmissao", prof.dataAdmissao ?? "");
+    setVal("status", prof.status ?? "");
 
     titulo.textContent = "Editar Profissional";
     btnCadastrar.textContent = "Salvar";
@@ -229,11 +230,10 @@ function configurarFormulario() {
     novoForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const campos = novoForm.querySelectorAll("input, select");
         const btnCadastrar = novoForm.querySelector(".btn-cadastrar");
         const editandoId = btnCadastrar.dataset.editandoId;
 
-        const dataAdmissao = campos[6].value;
+        const dataAdmissao = novoForm.querySelector("#dataAdmissao")?.value ?? "";
         if (dataAdmissao) {
             const ano = new Date(dataAdmissao).getFullYear();
             if (ano < 2000 || ano > new Date().getFullYear()) {
@@ -243,14 +243,14 @@ function configurarFormulario() {
         }
 
         const dados = {
-            nome:         campos[0].value.trim(),
-            cpf:          campos[1].value.trim(),
-            cargo:        campos[2].value.trim(),
-            setor:        campos[3].value.trim(),
-            email:        campos[4].value.trim(),
-            telefone:     campos[5].value.trim(),
-            dataAdmissao: dataAdmissao,
-            status:       campos[7].value,
+            nome: novoForm.querySelector("#nome")?.value.trim() ?? "",
+            cpf: novoForm.querySelector("#cpf")?.value.trim() ?? "",
+            cargo: novoForm.querySelector("#cargo")?.value.trim() ?? "",
+            setor: novoForm.querySelector("#setor")?.value.trim() ?? "",
+            email: novoForm.querySelector("#email")?.value.trim() ?? "",
+            telefone: novoForm.querySelector("#telefone")?.value.trim() ?? "",
+            dataAdmissao: novoForm.querySelector("#dataAdmissao")?.value ?? "",
+            status: novoForm.querySelector("#status")?.value ?? "",
         };
 
         btnCadastrar.disabled = true;
@@ -348,8 +348,8 @@ function configurarFiltro() {
 // ============================================================
 
 function configurarBtnNovo() {
-    const btnNovo     = document.querySelector(".btn-novo");
-    const closeIcon   = document.querySelector(".close-icon");
+    const btnNovo = document.querySelector(".btn-novo");
+    const closeIcon = document.querySelector(".close-icon");
     const btnCancelar = document.querySelector(".btn-cancelar");
 
     btnNovo?.addEventListener("click", () => {

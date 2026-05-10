@@ -9,37 +9,26 @@
     --text-color: #F8F9FA;
     --secondary-color-light: rgba(132, 139, 200, 0.18);
 
-    /* --- Cores de Notificação --- */
     --color-danger: #ff7782;
     --color-sucess: #41f1b6;
     --color-warning: #ffbb55;
 
-    /* --- Sombra da Caixa --- */
     --box-shadow: 0 1.2rem 0.7rem var(--secondary-color-light);
 
-    /* --- Animação de Transição --- */
-    --tran-03: all 0.2s ease;
     --tran-03: all 0.3s ease;
     --tran-04: all 0.4s ease;
     --tran-05: all 0.5s ease;
 }
 
-.danger {
-    color: var(--color-danger);
-}
+.danger  { color: var(--color-danger); }
+.sucess  { color: var(--color-sucess); }
+.warning { color: var(--color-warning); }
 
-.sucess {
-    color: var(--color-sucess);
-}
+/* ── Título ─────────────────────────────────────────────── */
 
-.warning {
-    color: var(--color-warning);
-}
-
-/*----------Titulo------------*/
 .titulos h1 {
-  color: #003366;
-  font-size: 28px;
+    color: #003366;
+    font-size: 28px;
 }
 
 .titulos span {
@@ -48,41 +37,24 @@
 }
 
 .titulos h3 {
-  font-size: 14px;
-  color: #666;
-  font-weight: normal;
+    font-size: 14px;
+    color: #666;
+    font-weight: normal;
 }
 
 .titulos {
     margin-bottom: 30px;
 }
-/*-------------Card--------------*/
 
-.card{
+/* ── Card ────────────────────────────────────────────────── */
+
+.card {
     background-color: white;
     border-radius: 12px;
     padding: 24px;
     margin-bottom: 25px;
     box-shadow: var(--box-shadow);
     border: 1px solid #e0e0e0;
-}
-
-.checkbox-wrapper{
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 16px;
-}
-
-.checkbox-label{
-    flex: 1;
-}
-
-.checkbox-wrapper input[type="checkbox"] {
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    margin-top: 2px;
 }
 
 .card-header {
@@ -93,46 +65,45 @@
     margin-bottom: 7px;
 }
 
-.descricao,
-.helper-text {
-    font-size: 12px;
-    color: #666666;
-    margin-top: 10px;      
-    margin-bottom: 12px;   
-    line-height: 1.5;
-}
-
 .card i {
     font-size: 30px;
 }
 
-/************* Inputs e Selects**************/
+/* ── Checkbox ────────────────────────────────────────────── */
 
-.campo input [type="number"],
-.campo input [type="tel"],
-.campo select {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1px solid #aaa;
-    border-radius: 8px;
+.checkbox-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
 }
 
-input{
-    width: 100%;
-    padding: 12px 16px;
-    border: 1px solid #aaa;
-    border-radius: 8px;
+.checkbox-label {
+    flex: 1;
 }
 
-/************ Focus Azul **************/
-.campo input:focus,
-.campo select:focus {
-    outline: none;
-    border-color: #0066cc;
-    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+.checkbox-wrapper input[type="checkbox"] {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    cursor: pointer;
 }
 
-.campo label{
+/* ── Descrições ──────────────────────────────────────────── */
+
+.descricao,
+.helper-text {
+    font-size: 12px;
+    color: #666666;
+    margin-top: 10px;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+/* ── Inputs e Selects ────────────────────────────────────── */
+
+.campo label {
     display: block;
     font-size: 14px;
     font-weight: 600;
@@ -141,35 +112,83 @@ input{
     margin-top: 15px;
 }
 
-/*********** Botão **************/
+/* Corrigido: sem espaço entre input e [type] */
+.campo input[type="number"],
+.campo input[type="tel"],
+.campo select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    background-color: #fff;
+    box-sizing: border-box;
+}
 
-.button-container{
+input[type="number"],
+input[type="tel"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+/* ── Focus ───────────────────────────────────────────────── */
+
+.campo input:focus,
+.campo select:focus {
+    outline: none;
+    border-color: #0066cc;
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+/* ── Estado desabilitado ─────────────────────────────────── */
+
+.campo-desabilitado label,
+.campo-desabilitado p {
+    opacity: 0.4;
+}
+
+.campo-desabilitado select,
+.campo-desabilitado input {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #f5f5f5;
+    pointer-events: none;
+}
+
+/* ── Botão Salvar ────────────────────────────────────────── */
+
+.button-container {
     display: flex;
     justify-content: flex-end;
     margin-top: 32px;
     padding-top: 24px;
 }
 
-#btn-salvar{
+#btn-salvar {
     background: linear-gradient(to right, #015cb9, #013973);
     color: white;
     padding: 12px 32px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    font-size: 14px;
+    font-family: inherit;
+    transition: var(--tran-03);
 }
 
-#btn-salvar:hover{
+#btn-salvar:hover {
     background: #0052a3;
     transform: translateY(-1px);
 }
-.campo-desabilitado label,
-.campo-desabilitado p {
-    opacity: 0.4;
-}
-.campo-desabilitado input,
-.campo-desabilitado select {
-    opacity: 0.4;
+
+#btn-salvar:disabled {
+    opacity: 0.7;
     cursor: not-allowed;
-    background: #f5f5f5;
+    transform: none;
 }

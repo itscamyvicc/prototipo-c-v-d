@@ -35,29 +35,52 @@ export async function iniciarDashboard() {
         if (valores[2]) valores[2].textContent = docsValidos;
         if (valores[3]) valores[3].textContent = alertasPendentes;
 
+        // Documentos vencendo em breve (8 a 30 dias) — máximo 3
         const vencendo = documentos
             .filter(d => {
                 if (!d.dataValidade) return false;
                 const validade = new Date(d.dataValidade);
                 const diasRestantes = Math.ceil((validade - hoje) / (1000 * 60 * 60 * 24));
                 const limite = d.alertarDias ?? 30;
-                return diasRestantes >= 0 && diasRestantes <= limite;
+                return diasRestantes > 7 && diasRestantes <= limite;
             })
             .map(d => {
                 const validade = new Date(d.dataValidade);
                 const diasRestantes = Math.ceil((validade - hoje) / (1000 * 60 * 60 * 24));
                 return { ...d, diasRestantes };
             })
-            .sort((a, b) => a.diasRestantes - b.diasRestantes);
+            .sort((a, b) => a.diasRestantes - b.diasRestantes)
+            .slice(0, 3);
 
         renderizarVencendo(vencendo);
 
-        const urgentes = alertas.filter(a => {
-    if (a.visualizado !== false) return false;
-    const venc = a.dataVencimento?.toDate ? a.dataVencimento.toDate() : new Date(a.dataVencimento ?? null);
-    const dias = Math.ceil((venc - hoje) / (1000 * 60 * 60 * 24));
-    return dias <= 7;
-});
+        // IDs de documentos com alerta pendente (não visualizado)
+        const docsComAlertaPendente = new Set(
+            snapAlertas.docs
+                .map(d => d.data())
+                .filter(a => a.visualizado === false && a.documentoId)
+                .map(a => a.documentoId)
+        );
+
+        // Alertas urgentes — só documentos com alerta pendente e vencendo em até 7 dias
+        const urgentes = snapDocs.docs
+            .filter(d => {
+                if (!docsComAlertaPendente.has(d.id)) return false;
+                const data = d.data();
+                if (!data.dataValidade) return false;
+                const validade = new Date(data.dataValidade);
+                const dias = Math.ceil((validade - hoje) / (1000 * 60 * 60 * 24));
+                return dias <= 7;
+            })
+            .map(d => {
+                const data = d.data();
+                const validade = new Date(data.dataValidade);
+                const dias = Math.ceil((validade - hoje) / (1000 * 60 * 60 * 24));
+                return { ...data, diasRestantes: dias };
+            })
+            .sort((a, b) => a.diasRestantes - b.diasRestantes)
+            .slice(0, 3);
+
         renderizarAlertas(urgentes);
 
         atualizarGraficos(documentos, profissionais);
@@ -72,6 +95,7 @@ function renderizarVencendo(lista) {
     if (!container) return;
 
     container.querySelectorAll(".item-vencendo").forEach(el => el.remove());
+    container.querySelector(".alertas-ok")?.remove();
 
     if (lista.length === 0) {
         container.insertAdjacentHTML("beforeend", `
@@ -87,7 +111,9 @@ function renderizarVencendo(lista) {
         const badge = doc.diasRestantes === 0 ? "Hoje" : `${doc.diasRestantes} dias`;
         container.insertAdjacentHTML("beforeend", `
             <div class="item-vencendo">
-                <div class="item-vencendo-icon"><i class='bx bx-error'></i></div>
+                <div class="item-vencendo-icon">
+                    <i class='bx bx-error'></i>
+                </div>
                 <div class="item-vencendo-info">
                     <div class="item-vencendo-topo">
                         <strong>${doc.tipoDocumento ?? "Documento"}</strong>
@@ -117,15 +143,23 @@ function renderizarAlertas(lista) {
         return;
     }
 
-    lista.forEach(alerta => {
+    lista.forEach(doc => {
+        const vencido = doc.diasRestantes < 0;
+        const badge = vencido
+            ? `Vencido há ${Math.abs(doc.diasRestantes)} dias`
+            : doc.diasRestantes === 0 ? "Vence hoje" : `${doc.diasRestantes} dias`;
+
         container.insertAdjacentHTML("beforeend", `
             <div class="item-vencendo item-alerta">
-                <div class="item-vencendo-icon"><i class='bx bxs-bell-ring'></i></div>
+                <div class="item-vencendo-icon item-icon-red">
+                    <i class='bx bxs-bell-ring'></i>
+                </div>
                 <div class="item-vencendo-info">
                     <div class="item-vencendo-topo">
-                        <strong>${alerta.tipo ?? "Alerta"}</strong>
-                        <span class="badge-dias">${alerta.diasParaVencer ?? ""} dias</span>
+                        <strong>${doc.tipoDocumento ?? "Documento"}</strong>
+                        <span class="badge-dias badge-red">${badge}</span>
                     </div>
+                    <span class="item-vencendo-prof">${doc.nomeProfissional ?? ""}</span>
                 </div>
             </div>
         `);
@@ -156,7 +190,7 @@ function atualizarGraficos(documentos, profissionais) {
 
     criarGraficoBarras(Object.keys(setores), Object.values(setores));
     criarGraficoRosca(labelsTipos, percentuais);
-    criarGraficoLinhas(documentos); // ← única linha adicionada aqui
+    criarGraficoLinhas(documentos);
 }
 
 function criarGraficoBarras(labels, dados) {
@@ -199,7 +233,7 @@ function criarGraficoRosca(labels, dados) {
             labels,
             datasets: [{
                 data: dados,
-                backgroundColor: ['#003366','#1565c0','#1976d2','#42a5f5','#90caf9'],
+                backgroundColor: ['#003366', '#1565c0', '#1976d2', '#42a5f5', '#90caf9'],
                 borderWidth: 2,
                 borderColor: '#fff'
             }]

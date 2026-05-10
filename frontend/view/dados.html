@@ -41,7 +41,15 @@
             </div>
 
             <div class="nota-info">
-                <span>Formato esperado: Arquivo CSV com colunas de profissionais e documentos.</span>
+                <span>
+                    <strong>Tipo de arquivo:</strong> CSV separado por ponto e vírgula (;)<br><br>
+                    <strong>Campos obrigatórios do profissional:</strong><br>
+                    nome; cpf; cargo; setor; email; telefone; dataAdmissao; status<br><br>
+                    <strong>Campos obrigatórios do documento:</strong><br>
+                    tipoDocumento; numeroDocumento; orgaoEmissor; dataEmissao; dataValidade<br><br>
+                    <strong>Campo opcional:</strong><br>
+                    alertarDias (padrão: 30 dias se não informado)
+                </span>
             </div>
 
             <button id="btnImportar" class="btn-primary">Importar Arquivo</button>
@@ -58,18 +66,32 @@
                 <h3>Exportar Dados</h3>
             </div>
 
-            <p class="card-descricao">Gere um arquivo CSV com seus dados cadastrados.</p>
+             <p class="card-descricao">Gere um arquivo CSV com seus dados cadastrados.</p>
 
-            <div class="alert-info">
-                <p><strong>Nota:</strong> Os arquivos CSV podem ser abertos no Excel para análise ou edição.</p>
-            </div>
-            <p class="nota-info">O arquivo CSV gerado pode ser usado em sistemas externos ou para auditoria de dados.</p>
-
-            <button id="btnExportar" class="btn-primary">Exportar CSV Combinado</button>
-            <span id="mensagemExport"></span>
-        </div>
-
+    <div class="alert-info">
+        <p><strong>Nota:</strong> Os arquivos CSV podem ser abertos no Excel para análise ou edição.</p>
     </div>
+    
+    <div class="nota-info">
+        <span>
+            O arquivo CSV gerado contém profissionais e documentos vinculados, 
+            podendo ser usado para backup, auditoria ou reimportação no sistema.
+        </span>
+    </div>
+
+    <button id="btnExportar" class="btn-primary">Exportar CSV Combinado</button>
+    <span id="mensagemExport"></span>
+</div>
+    </div>
+<!-- POPUP -->
+<div id="popup-dados">
+    <div class="popup-box-dados">
+        <div id="popup-icone-dados"></div>
+        <h3 id="popup-titulo-dados"></h3>
+        <p id="popup-msg-dados"></p>
+        <button id="popup-fechar-dados">OK</button>
+    </div>
+</div>
 
 </body>
 
