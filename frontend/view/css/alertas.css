@@ -312,3 +312,48 @@ header {
     flex-shrink: 0;
     font-size: 22px; /* ← aumenta o ícone */
 }
+.header-acoes {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.btn-novo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 35px;
+    padding: 0 20px;
+    border: none;
+    outline: none;
+    color: #fff;
+    border-radius: 5px;
+    background: linear-gradient(to right, #015cb9, #013973);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-novo:hover {
+    background: #003366;
+}
+/* ----------- Notificação do botão verificar ----------- */
+#notif-alertas {
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.notif-sucesso {
+    background: #dcfce7;
+    color: #1b8a5a;
+    border: 1px solid #86efac;
+}
+
+.notif-erro {
+    background: #fde8e8;
+    color: #c0392b;
+    border: 1px solid #fca5a5;
+}

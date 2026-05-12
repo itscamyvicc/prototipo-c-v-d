@@ -208,6 +208,9 @@ function abrirEdicao(prof) {
     btnCadastrar.dataset.editandoId = prof.id;
 
     document.querySelector(".tabela_primaria")?.classList.add("ativo");
+const conteudoPrincipal = document.getElementById("conteudo-principal");
+if (conteudoPrincipal) conteudoPrincipal.scrollTo({ top: 0, behavior: "smooth" });
+
 }
 
 // ============================================================

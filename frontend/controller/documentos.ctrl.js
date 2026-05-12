@@ -192,6 +192,8 @@ function abrirEdicao(documento) {
     if (btnCadastrar) { btnCadastrar.textContent = "Salvar"; btnCadastrar.dataset.editandoId = documento.id; }
 
     document.querySelector(".tabela_primaria")?.classList.add("ativo");
+    const conteudoPrincipal = document.getElementById("conteudo-principal");
+    if (conteudoPrincipal) conteudoPrincipal.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 // ── Select profissionais ──────────────────────────────────────

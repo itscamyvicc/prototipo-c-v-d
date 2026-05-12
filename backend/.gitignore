@@ -1,3 +1,4 @@
-backend/node_modules/
-backend/serviceAccountKey.json
+node_modules/
+serviceAccountKey.json
+package-lock.json
 .env
