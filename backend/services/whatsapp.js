@@ -7,7 +7,7 @@ const axios = require("axios");
 const ULTRAMSG_INSTANCE = process.env.ULTRAMSG_INSTANCE;
 const ULTRAMSG_TOKEN    = process.env.ULTRAMSG_TOKEN;
 
-const ULTRAMSG_URL = `https://api.ultramsg.com/${ULTRAMSG_INSTANCE}/messages/chat`;
+const ULTRAMSG_URL = `https://api.ultramsg.com/${ULTRAMSG_INSTANCE}/messages/chat?token=${ULTRAMSG_TOKEN}`;
 
 function formatarTelefone(telefone) {
     if (!telefone) return null;
@@ -44,9 +44,8 @@ async function enviarWhatsAppAlerta({ nome, telefone, tipoDocumento, diasRestant
         await axios.post(
             ULTRAMSG_URL,
             {
-                token: ULTRAMSG_TOKEN,
-                to:    numeroFormatado,
-                body:  mensagem,
+                to:   numeroFormatado,
+                body: mensagem,
             },
             {
                 headers: {

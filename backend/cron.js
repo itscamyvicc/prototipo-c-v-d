@@ -34,6 +34,29 @@ async function verificarAlertas() {
             return;
         }
 
+        // ─── Reset automático: reabilita alertas urgentes já visualizados ───
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+
+        const visualizadosSnap = await db.collection("alertas")
+            .where("visualizado", "==", true)
+            .get();
+
+        for (const doc of visualizadosSnap.docs) {
+            const alerta = doc.data();
+            if (!alerta.dataVencimento) continue;
+            const venc = alerta.dataVencimento.toDate
+                ? alerta.dataVencimento.toDate()
+                : new Date(alerta.dataVencimento);
+            venc.setHours(0, 0, 0, 0);
+            const dias = Math.round((venc - hoje) / (1000 * 60 * 60 * 24));
+            if (dias >= 0 && dias <= 7) {
+                await doc.ref.update({ visualizado: false });
+                console.log(`🔄 Reset: ${alerta.tipoDocumento ?? "Documento"} vence em ${dias} dia(s) — reaberto.`);
+            }
+        }
+        // ─────────────────────────────────────────────────────────────────────
+
         // Busca alertas não visualizados
         const alertasSnap = await db.collection("alertas")
             .where("visualizado", "==", false)
@@ -50,9 +73,6 @@ async function verificarAlertas() {
         const profsSnap = await db.collection("profissionais").get();
         const profMap   = {};
         profsSnap.docs.forEach(d => { profMap[d.id] = d.data(); });
-
-        const hoje = new Date();
-        hoje.setHours(0, 0, 0, 0);
 
         for (const alertaDoc of alertasSnap.docs) {
             const alerta = alertaDoc.data();

@@ -54,24 +54,15 @@ export async function iniciarDashboard() {
 
         renderizarVencendo(vencendo);
 
-        // IDs de documentos com alerta pendente (não visualizado)
-        const docsComAlertaPendente = new Set(
-            snapAlertas.docs
-                .map(d => d.data())
-                .filter(a => a.visualizado === false && a.documentoId)
-                .map(a => a.documentoId)
-        );
-
-        // Alertas urgentes — só documentos com alerta pendente e vencendo em até 7 dias
-        const urgentes = snapDocs.docs
-            .filter(d => {
-                if (!docsComAlertaPendente.has(d.id)) return false;
-                const data = d.data();
-                if (!data.dataValidade) return false;
-                const validade = new Date(data.dataValidade);
-                const dias = Math.ceil((validade - hoje) / (1000 * 60 * 60 * 24));
-                return dias <= 7;
-            })
+       // Alertas urgentes — documentos vencendo em até 7 dias
+const urgentes = snapDocs.docs
+    .filter(d => {
+        const data = d.data();
+        if (!data.dataValidade) return false;
+        const validade = new Date(data.dataValidade);
+        const dias = Math.ceil((validade - hoje) / (1000 * 60 * 60 * 24));
+        return dias <= 7;
+    })
             .map(d => {
                 const data = d.data();
                 const validade = new Date(data.dataValidade);

@@ -5,7 +5,7 @@
 import { db } from "/firebase/firebase-config.js";
 import {
     collection, getDocs, addDoc, updateDoc,
-    orderBy, query, serverTimestamp, getDoc, doc
+    orderBy, query, where, serverTimestamp, getDoc, doc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 export async function init() {
@@ -18,12 +18,13 @@ export async function init() {
     }
     await carregarDocumentos();
     await preencherSelectProfissionais();
-    await preencherFiltroTipos(); // ← só isso
+    await preencherFiltroTipos();
     configurarFormulario();
     configurarBusca();
     configurarFiltro();
     configurarBtnNovo();
 }
+
 // ── Helpers ──────────────────────────────────────────────────
 
 function fecharFormulario() {
@@ -50,7 +51,6 @@ async function getDiasAlerta() {
 // ── Alerta automático ────────────────────────────────────────
 
 async function criarOuAtualizarAlerta(dados, docId = null) {
-    // Só cria alerta se tiver data de validade
     if (!dados.dataValidade) return;
 
     try {
@@ -72,13 +72,32 @@ async function criarOuAtualizarAlerta(dados, docId = null) {
             visualizado:     false,
             status:          "pendente",
             dataEnvio:       serverTimestamp(),
-            criadoEm:        serverTimestamp(),
-            ...(docId ? { documentoId: docId } : {})
+            documentoId:     docId ?? ""
         };
 
+        // Verifica se já existe alerta para esse documento
+        if (docId) {
+            const alertasSnap = await getDocs(
+                query(collection(db, "alertas"), where("documentoId", "==", docId))
+            );
+
+            if (!alertasSnap.empty) {
+                // Atualiza o existente
+                await updateDoc(doc(db, "alertas", alertasSnap.docs[0].id), {
+                    diasParaVencer,
+                    dataVencimento: validade,
+                    visualizado:    false,
+                    status:         "pendente"
+                });
+                return;
+            }
+        }
+
+        // Cria novo alerta
         await addDoc(collection(db, "alertas"), dadosAlerta);
+
     } catch (erro) {
-        console.error("Erro ao criar alerta:", erro);
+        console.error("Erro ao criar/atualizar alerta:", erro);
     }
 }
 
@@ -274,14 +293,14 @@ function configurarFormulario() {
         try {
             if (editandoId) {
                 await updateDoc(doc(db, "documentos", editandoId), dados);
-                await criarOuAtualizarAlerta(dados, editandoId); // ← alerta ao editar
+                await criarOuAtualizarAlerta(dados, editandoId);
                 novoForm.reset(); fecharFormulario();
                 await preencherSelectProfissionais(); await carregarDocumentos();
                 mostrarPopup("Documento atualizado!", "As alterações foram salvas com sucesso.");
             } else {
                 dados.criadoEm = serverTimestamp();
                 const docRef = await addDoc(collection(db, "documentos"), dados);
-                await criarOuAtualizarAlerta(dados, docRef.id); // ← alerta ao cadastrar
+                await criarOuAtualizarAlerta(dados, docRef.id);
                 novoForm.reset(); fecharFormulario();
                 await preencherSelectProfissionais(); await carregarDocumentos();
                 mostrarPopup("Documento cadastrado!", "O documento foi adicionado com sucesso.");
@@ -319,6 +338,7 @@ function configurarFiltro() {
         carregarDocumentos(document.querySelector(".busca input")?.value ?? "", select.value);
     });
 }
+
 async function preencherFiltroTipos() {
     const select = document.querySelector(".filtro select");
     if (!select) return;
@@ -352,10 +372,9 @@ function configurarBtnNovo() {
     });
 
     document.querySelector(".btn-cancelar")?.addEventListener("click", (e) => {
-    e.preventDefault();
-    document.getElementById("formInfo")?.reset();
-    // sem fecharFormulario() — só limpa os campos
-});
+        e.preventDefault();
+        document.getElementById("formInfo")?.reset();
+    });
 
     document.getElementById("popup-fechar")?.addEventListener("click", () => {
         document.getElementById("popup-sucesso")?.classList.remove("ativo");
