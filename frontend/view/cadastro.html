@@ -62,8 +62,14 @@
     </div>
 
     <script type="module">
-        import { auth } from "/firebase/firebase-config.js";
+        // ✅ CORREÇÃO 1: Caminho correto do firebase-config
+        // Ajuste abaixo para o caminho real no seu projeto.
+        // Se o arquivo fica em /frontend/firebase/firebase-config.js, use esse caminho.
+        import { auth } from "/firebase-config.js";
+
         import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+        // ---------- Utilitários ----------
 
         function clearAlerts() {
             const el = document.getElementById('register-alert');
@@ -90,32 +96,68 @@
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
 
+        // ---------- Cadastro ----------
+
         document.getElementById('formCadastro').addEventListener('submit', async (e) => {
             e.preventDefault();
-            clearAlerts(); clearErrors();
+            clearAlerts();
+            clearErrors();
 
             const email    = document.getElementById('reg-email').value.trim();
             const password = document.getElementById('reg-password').value;
             const confirm  = document.getElementById('reg-confirm').value;
 
             let valid = true;
-            if (!isValidEmail(email))      { showErr('reg-email-err', 'Informe um e-mail válido.'); valid = false; }
-            if (password.length < 10)      { showErr('reg-password-err', 'Mínimo 10 caracteres.'); valid = false; }
-            if (password !== confirm)      { showErr('reg-confirm-err', 'As senhas não coincidem.'); valid = false; }
+            if (!isValidEmail(email))  { showErr('reg-email-err',    'Informe um e-mail válido.'); valid = false; }
+            if (password.length < 10)  { showErr('reg-password-err', 'Mínimo 10 caracteres.');    valid = false; }
+            if (password !== confirm)  { showErr('reg-confirm-err',  'As senhas não coincidem.'); valid = false; }
             if (!valid) return;
+
+            const btnSubmit = document.querySelector('#formCadastro button[type="submit"]');
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'Criando conta...';
 
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
                 setAlert('register-alert', 'success', 'Cadastro realizado! Redirecionando...');
-                setTimeout(() => window.location.replace('/view/login.html'), 1500);
+
+                // ✅ CORREÇÃO 2: Redireciona para o login após 1.5s
+                // Ajuste o caminho abaixo conforme seu projeto
+                setTimeout(() => window.location.replace('/frontend/view/login.html'), 1500);
 
             } catch (erro) {
-                if (erro.code === 'auth/email-already-in-use') {
-                    setAlert('register-alert', 'error', 'Este e-mail já está cadastrado.');
-                } else {
-                    setAlert('register-alert', 'error', 'Erro ao cadastrar. Tente novamente.');
-                    console.error(erro);
-                }
+                console.error(erro);
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Criar Conta';
+
+                const mensagens = {
+                    'auth/email-already-in-use': 'Este e-mail já está cadastrado.',
+                    'auth/invalid-email':         'E-mail inválido.',
+                    'auth/weak-password':         'Senha muito fraca. Use pelo menos 10 caracteres.',
+                    'auth/network-request-failed':'Sem conexão com a internet. Tente novamente.',
+                    'auth/too-many-requests':     'Muitas tentativas. Aguarde alguns minutos.',
+                };
+                const msg = mensagens[erro.code] ?? 'Erro ao cadastrar. Tente novamente.';
+                setAlert('register-alert', 'error', msg);
+            }
+        });
+
+        // ---------- Botão Voltar ----------
+
+        document.getElementById('btn-voltar')?.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            // Se a página usa SPA (carrega HTML dinamicamente no #conteudo-principal)
+            const conteudo = document.getElementById('conteudo-principal');
+            if (conteudo) {
+                const resposta = await fetch('/frontend/view/login.html');
+                const html = await resposta.text();
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                conteudo.innerHTML = doc.body.innerHTML;
+                import(`/frontend/controller/login.ctrl.js?t=${Date.now()}`).catch(console.error);
+            } else {
+                // ✅ Se for página standalone, apenas navega de volta
+                window.location.replace('/frontend/view/login.html');
             }
         });
     </script>
