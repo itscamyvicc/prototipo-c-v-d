@@ -35,7 +35,7 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     min-height: 100vh;
-    overflow: hidden;
+    /* removido overflow: hidden */
 }
 
 /*************** Branding *************/
@@ -99,6 +99,8 @@ body {
     align-items: center;
     justify-content: center;
     padding: 40px 24px;
+    height: 100vh;        /* ← adicionado */
+    overflow-y: auto;     /* ← adicionado */
 }
 
 .form-container {
@@ -298,6 +300,8 @@ form {
     .lado-direito {
         padding: 24px 16px;
         align-items: flex-start;
+        height: auto;         /* ← reseta em mobile */
+        overflow-y: visible;  /* ← reseta em mobile */
     }
 
     .form-container {
