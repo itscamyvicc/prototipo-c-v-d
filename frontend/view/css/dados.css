@@ -9,47 +9,22 @@
     --text-color: #F8F9FA;
     --secondary-color-light: rgba(132, 139, 200, 0.18);
 
-    /* --- Cores de Notificação --- */
     --color-danger: #ff7782;
     --color-sucess: #41f1b6;
     --color-warning: #ffbb55;
 
-    /* --- Sombra da Caixa --- */
     --box-shadow: 0 1.2rem 0.7rem var(--secondary-color-light);
 
-    /* --- Animação de Transição --- */
-    --tran-03: all 0.2s ease;
     --tran-03: all 0.3s ease;
     --tran-04: all 0.4s ease;
     --tran-05: all 0.5s ease;
 }
 
-.danger {
-    color: var(--color-danger);
-}
+.danger  { color: var(--color-danger); }
+.sucess  { color: var(--color-sucess); }
+.warning { color: var(--color-warning); }
 
-.sucess {
-    color: var(--color-sucess);
-}
-
-.warning {
-    color: var(--color-warning);
-}
-
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-@media (max-width: 768px) {
-    .cards-container {
-        grid-template-columns: 1fr;
-    }
-}
-/*----------Titulo------------*/
-
+/* ── Título ── */
 header {
     display: flex;
     justify-content: space-between;
@@ -58,28 +33,32 @@ header {
 }
 
 .titulos h1 {
-  font-size: 28px;
-  color: #003366;
+    font-size: 28px;
+    color: #003366;
 }
 
 .titulos p {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 20px;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
 }
 
-/*-------------Cards-------------*/
-
+/* ── Grid ── */
 .cards-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 35px;
     max-width: 1400px;
     width: 100%;
-    align-items: start;
+    align-items: stretch;
     margin: 15px auto 0 auto;
 }
 
+@media (max-width: 768px) {
+    .cards-container { grid-template-columns: 1fr; }
+}
+
+/* ── Cards ── */
 .card-import,
 .card-export {
     background: white;
@@ -87,62 +66,51 @@ header {
     padding: 28px;
     display: flex;
     flex-direction: column;
-    min-height: 600px;
     box-shadow: var(--box-shadow);
 }
 
-.card-header{
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
-.card-header svg{
-  color: var(--color-sucess);
-  flex-shrink: 0;
-}
+.card-header svg { flex-shrink: 0; }
 
 .card-header h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #003366;
+    font-size: 18px;
+    font-weight: 600;
+    color: #003366;
 }
 
 .card-descricao {
-  font-size: 17px;
-  color: #666;
-  margin-bottom: 15px;
-  margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+    margin-top: 4px;
 }
 
-/*************Campo*************/
-
-.campo{
-  margin-bottom: 24px;
-}
+/* ── Campo ── */
+.campo { margin-bottom: 20px; }
 
 .campo label {
     display: block;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     color: #003366;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
 }
 
-.campo span{
-  color: #003366;
-}
-/***********Input de Arquivo****************/
-
-.file-input-wrapper{
-  position: relative;
-  margin-bottom: 12px;
+/* ── File input ── */
+.file-input-wrapper {
+    position: relative;
+    margin-bottom: 12px;
 }
 
-.btn-select-file{
-  width: 100%;
-  background: white;
+.btn-select-file {
+    width: 100%;
+    background: white;
     border: 1px solid #E0E0E0;
     color: #666;
     padding: 12px 16px;
@@ -154,20 +122,59 @@ header {
     justify-content: space-between;
     align-items: center;
     font-family: 'Poppins', sans-serif;
-  }
+}
 
-  .btn-select-file:hover {
+.btn-select-file:hover {
     border-color: #0066cc;
     background: #F8F9FA;
 }
 
 .file-name {
-  color: #999;
-  font-size: 13px;
+    color: #999;
+    font-size: 13px;
 }
 
-/*************Caixas de Nota***************/
+/* ── Caixas de nota ── */
 .nota-info {
+    background-color: #f2f2f2;
+    border-left: 4px solid #1e4b78;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #1A1A1A;
+    line-height: 1.6;
+}
+
+.nota-linha {
+    margin-bottom: 12px;
+}
+
+.nota-subtitulo {
+    margin-top: 12px;
+    margin-bottom: 8px;
+}
+
+/* ── Chips ── */
+.chips-grupo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.chip {
+    background: white;
+    border: 1px solid #c5d3e8;
+    color: #003366;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+/* ── Alert info ── */
+.alert-info {
     background-color: #f2f2f2;
     border-left: 4px solid #1e4b78;
     padding: 14px;
@@ -175,26 +182,16 @@ header {
     font-size: 13px;
     color: #1A1A1A;
     line-height: 1.6;
+    margin-bottom: 16px;
 }
 
-.alert-info {
-  background-color: #f2f2f2;
-  border-left: 4px solid #1e4b78;
-  padding: 16px;
-  border-radius: 8px;
-    margin: 25px 0;
-    font-size: 13px;
-    color: #1A1A1A;
-    line-height: 1.6;
-  }
+.alert-info strong { font-weight: 600; }
 
-  
-.alert-info strong {
-    font-weight: 600;
-}
+/* ── Spacer ── */
+.spacer { flex: 1; }
 
-  /*************Botões*****************/
-  .btn-primary {
+/* ── Botão ── */
+.btn-primary {
     width: 100%;
     background: linear-gradient(to right, #015cb9, #013973);
     color: white;
@@ -204,20 +201,20 @@ header {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    margin-top: auto;
-
-  }
- #mensagemImport,
-#mensagemExport {
-    display: none;
+    margin-top: 24px;
+    font-family: 'Poppins', sans-serif;
 }
+
+.btn-primary:hover { opacity: 0.9; }
+
+/* ── Mensagens ── */
+#mensagemImport,
+#mensagemExport { display: none; }
 
 #mensagemImport.sucesso,
 #mensagemImport.erro,
 #mensagemExport.sucesso,
-#mensagemExport.erro {
-    display: block;
-}
+#mensagemExport.erro { display: block; }
 
 /* ── Popup ── */
 #popup-dados {
@@ -230,9 +227,7 @@ header {
     justify-content: center;
 }
 
-#popup-dados.ativo {
-    display: flex;
-}
+#popup-dados.ativo { display: flex; }
 
 .popup-box-dados {
     background: white;
@@ -256,15 +251,8 @@ header {
     margin: 0 auto 16px;
 }
 
-.popup-icone.sucesso {
-    background: #e6faf4;
-    color: #41f1b6;
-}
-
-.popup-icone.erro {
-    background: #fff0f1;
-    color: #ff7782;
-}
+.popup-icone.sucesso { background: #e6faf4; color: #41f1b6; }
+.popup-icone.erro    { background: #fff0f1; color: #ff7782; }
 
 .popup-box-dados h3 {
     font-size: 18px;
@@ -288,13 +276,5 @@ header {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-}
-
-.card-export .alert-info {
-    margin-top: 0;
-}
-
-.card-export .nota-info {
-    margin-top: 16px;
-    margin-bottom: auto; /* ← isso empurra o botão para baixo */
+    font-family: 'Poppins', sans-serif;
 }

@@ -1,12 +1,10 @@
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Importação/Exportação de Dados</title>
     <link rel="stylesheet" href="/view/css/dados.css">
 </head>
-
 <body>
     <header>
         <div class="titulos">
@@ -20,9 +18,9 @@
         <!-- Card Importar -->
         <div class="card-import">
             <div class="card-header">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#003366" class="bi bi-box-arrow-up" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z" />
-                    <path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#003366" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/>
+                    <path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
                 </svg>
                 <h3>Importar Dados</h3>
             </div>
@@ -34,21 +32,38 @@
                 <div class="file-input-wrapper">
                     <button type="button" class="btn-select-file upload-botao">
                         <span>Escolher Arquivo</span>
-                        <span id="nomeArquivo"> Nenhum arquivo escolhido </span>
+                        <span id="nomeArquivo" class="file-name">Nenhum arquivo escolhido</span>
                     </button>
                     <input type="file" id="arquivoCsv" accept=".csv" hidden>
                 </div>
             </div>
 
             <div class="nota-info">
-                <span>
-                    <strong>Tipo de arquivo:</strong> CSV separado por ponto e vírgula (;)<br><br>
-                    <strong>Campos obrigatórios do profissional:</strong><br>
-                    nome; cpf; cargo; setor; email; telefone; dataAdmissao; status<br><br>
-                    <strong>Campos obrigatórios do documento:</strong><br>
-                    tipoDocumento; numeroDocumento; orgaoEmissor; dataEmissao; dataValidade<br><br>
-                </span>
+                <p class="nota-linha"><strong>Tipo de arquivo:</strong> CSV separado por ponto e vírgula (;)</p>
+
+                <p class="nota-subtitulo"><strong>Campos obrigatórios do profissional:</strong></p>
+                <div class="chips-grupo">
+                    <span class="chip">nome</span>
+                    <span class="chip">cpf</span>
+                    <span class="chip">cargo</span>
+                    <span class="chip">setor</span>
+                    <span class="chip">email</span>
+                    <span class="chip">telefone</span>
+                    <span class="chip">dataAdmissao</span>
+                    <span class="chip">status</span>
+                </div>
+
+                <p class="nota-subtitulo"><strong>Campos obrigatórios do documento:</strong></p>
+                <div class="chips-grupo">
+                    <span class="chip">tipoDocumento</span>
+                    <span class="chip">numeroDocumento</span>
+                    <span class="chip">orgaoEmissor</span>
+                    <span class="chip">dataEmissao</span>
+                    <span class="chip">dataValidade</span>
+                </div>
             </div>
+
+            <div class="spacer"></div>
 
             <button id="btnImportar" class="btn-primary">Importar Arquivo</button>
             <span id="mensagemImport"></span>
@@ -57,40 +72,42 @@
         <!-- Card Exportar -->
         <div class="card-export">
             <div class="card-header">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#003366" class="bi bi-download" viewBox="0 0 16 16">
-                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5" />
-                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#003366" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
                 </svg>
                 <h3>Exportar Dados</h3>
             </div>
 
-             <p class="card-descricao">Gere um arquivo CSV com seus dados cadastrados.</p>
+            <p class="card-descricao">Gere um arquivo CSV com seus dados cadastrados.</p>
 
-    <div class="alert-info">
-        <p><strong>Nota:</strong> Os arquivos CSV podem ser abertos no Excel para análise ou edição.</p>
-    </div>
-    
-    <div class="nota-info">
-        <span>
-            O arquivo CSV gerado contém profissionais e documentos vinculados, 
-            podendo ser usado para backup, auditoria ou reimportação no sistema.
-        </span>
+            <div class="alert-info">
+                <p><strong>Nota:</strong> Os arquivos CSV podem ser abertos no Excel para análise ou edição.</p>
+            </div>
+
+            <div class="nota-info">
+                <span>
+                    O arquivo CSV gerado contém profissionais e documentos vinculados,
+                    podendo ser usado para backup, auditoria ou reimportação no sistema.
+                </span>
+            </div>
+
+            <div class="spacer"></div>
+
+            <button id="btnExportar" class="btn-primary">Exportar CSV Combinado</button>
+            <span id="mensagemExport"></span>
+        </div>
+
     </div>
 
-    <button id="btnExportar" class="btn-primary">Exportar CSV Combinado</button>
-    <span id="mensagemExport"></span>
-</div>
+    <!-- POPUP -->
+    <div id="popup-dados">
+        <div class="popup-box-dados">
+            <div id="popup-icone-dados"></div>
+            <h3 id="popup-titulo-dados"></h3>
+            <p id="popup-msg-dados"></p>
+            <button id="popup-fechar-dados">OK</button>
+        </div>
     </div>
-<!-- POPUP -->
-<div id="popup-dados">
-    <div class="popup-box-dados">
-        <div id="popup-icone-dados"></div>
-        <h3 id="popup-titulo-dados"></h3>
-        <p id="popup-msg-dados"></p>
-        <button id="popup-fechar-dados">OK</button>
-    </div>
-</div>
-
 </body>
-
 </html>

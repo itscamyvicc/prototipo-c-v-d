@@ -13,7 +13,7 @@
         <header>
             <div class="image-text">
                 <span class="image">
-                    <img src="/frontend/assets/img/logo.png" alt="logo">
+                    <img src="/frontend/assets/img/logo.png" alt="logo" id="logo-easter">
                 </span>
                 <div class="text header-text">
                     <span class="name">C.V.D</span>
@@ -81,3 +81,35 @@
     <script type="module" src="/frontend/controller/conteudo.ctrl.js"></script>
 </body>
 </html>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        let cliques = 0;
+        let timer;
+
+        document.getElementById('logo-easter').addEventListener('click', () => {
+            cliques++;
+            clearTimeout(timer);
+            timer = setTimeout(() => { cliques = 0; }, 800);
+
+            if (cliques >= 3) {
+                cliques = 0;
+
+                const msg = document.createElement('div');
+                msg.innerHTML = '🔓 TI BUCHA Ativado!';
+                msg.style.cssText = `
+                    position: fixed; top: 50%; left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: #003366; color: #00ffcc;
+                    padding: 20px 40px; border-radius: 12px;
+                    font-size: 24px; font-weight: 700;
+                    z-index: 9999; font-family: monospace;
+                    box-shadow: 0 0 30px #00ffcc;
+                    animation: fadeOut 3s forwards;
+                `;
+                document.body.appendChild(msg);
+                setTimeout(() => msg.remove(), 3000);
+            }
+        });
+    });
+</script>

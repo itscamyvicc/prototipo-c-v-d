@@ -35,6 +35,7 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     min-height: 100vh;
+    overflow: hidden;
     /* removido overflow: hidden */
 }
 
