@@ -278,3 +278,57 @@ header {
     cursor: pointer;
     font-family: 'Poppins', sans-serif;
 }
+
+/* ── Accordion ── */
+.accordion {
+    margin-bottom: 8px;
+}
+
+.accordion-toggle {
+    width: 100%;
+    background: #f2f2f2;
+    border: 1px solid #c5d3e8;
+    border-radius: 8px;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #003366;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.2s ease;
+}
+
+.accordion-toggle:hover {
+    background: #e8eef5;
+}
+
+.accordion-seta {
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.accordion-toggle.aberto .accordion-seta {
+    transform: rotate(180deg);
+}
+
+.accordion-conteudo {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.accordion-conteudo.aberto {
+    max-height: 400px;
+}
+
+.accordion-conteudo .nota-info {
+    margin-top: 8px;
+}
+
+/* ── Espaço extra entre caixas do exportar ── */
+.nota-info-exportar {
+    margin-top: 8px;
+}

@@ -38,28 +38,39 @@
                 </div>
             </div>
 
-            <div class="nota-info">
-                <p class="nota-linha"><strong>Tipo de arquivo:</strong> CSV separado por ponto e vírgula (;)</p>
+            <!-- Accordion -->
+            <div class="accordion">
+                <button class="accordion-toggle" id="toggleNota" type="button">
+                    <span>Ver campos obrigatórios</span>
+                    <svg class="accordion-seta" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#003366" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </button>
+                <div class="accordion-conteudo" id="notaConteudo">
+                    <div class="nota-info">
+                        <p class="nota-linha"><strong>Tipo de arquivo:</strong> CSV separado por ponto e vírgula (;)</p>
 
-                <p class="nota-subtitulo"><strong>Campos obrigatórios do profissional:</strong></p>
-                <div class="chips-grupo">
-                    <span class="chip">nome</span>
-                    <span class="chip">cpf</span>
-                    <span class="chip">cargo</span>
-                    <span class="chip">setor</span>
-                    <span class="chip">email</span>
-                    <span class="chip">telefone</span>
-                    <span class="chip">dataAdmissao</span>
-                    <span class="chip">status</span>
-                </div>
+                        <p class="nota-subtitulo"><strong>Campos obrigatórios do profissional:</strong></p>
+                        <div class="chips-grupo">
+                            <span class="chip">nome</span>
+                            <span class="chip">cpf</span>
+                            <span class="chip">cargo</span>
+                            <span class="chip">setor</span>
+                            <span class="chip">email</span>
+                            <span class="chip">telefone</span>
+                            <span class="chip">dataAdmissao</span>
+                            <span class="chip">status</span>
+                        </div>
 
-                <p class="nota-subtitulo"><strong>Campos obrigatórios do documento:</strong></p>
-                <div class="chips-grupo">
-                    <span class="chip">tipoDocumento</span>
-                    <span class="chip">numeroDocumento</span>
-                    <span class="chip">orgaoEmissor</span>
-                    <span class="chip">dataEmissao</span>
-                    <span class="chip">dataValidade</span>
+                        <p class="nota-subtitulo"><strong>Campos obrigatórios do documento:</strong></p>
+                        <div class="chips-grupo">
+                            <span class="chip">tipoDocumento</span>
+                            <span class="chip">numeroDocumento</span>
+                            <span class="chip">orgaoEmissor</span>
+                            <span class="chip">dataEmissao</span>
+                            <span class="chip">dataValidade</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -85,7 +96,7 @@
                 <p><strong>Nota:</strong> Os arquivos CSV podem ser abertos no Excel para análise ou edição.</p>
             </div>
 
-            <div class="nota-info">
+            <div class="nota-info nota-info-exportar">
                 <span>
                     O arquivo CSV gerado contém profissionais e documentos vinculados,
                     podendo ser usado para backup, auditoria ou reimportação no sistema.

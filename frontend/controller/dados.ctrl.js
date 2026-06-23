@@ -228,3 +228,14 @@ export async function init() {
         }
     });
 }
+// ── Accordion ─────────────────────────────────────────────
+const toggleNota = document.getElementById('toggleNota');
+const notaConteudo = document.getElementById('notaConteudo');
+
+toggleNota?.addEventListener('click', () => {
+    const aberto = notaConteudo.classList.toggle('aberto');
+    toggleNota.querySelector('span').textContent = aberto 
+        ? 'Ocultar campos obrigatórios' 
+        : 'Ver campos obrigatórios';
+    toggleNota.classList.toggle('aberto', aberto);
+});
