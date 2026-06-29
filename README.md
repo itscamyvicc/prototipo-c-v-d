@@ -69,7 +69,7 @@ prototipo-c-v-d/
 │   ├── example.js                     → Modelo de configuração (público)
 │   └── collections.md                 → Documentação da estrutura do banco
 ├── docs/
-│   └── TCC-CVD.pdf                        → Documento do TCC
+│   └── TCC.pdf                        → Documento do TCC
 ├── .gitignore
 └── README.md
 ```
